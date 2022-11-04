@@ -1,0 +1,30 @@
+{
+  "name": "blog-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:Ar1f007/blog-api.git",
+  "author": "Ariful Hoque Al Amin <muhammadarif9416@yahoo.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.26.0",
+    "eslint-config-prettier": "^8.5.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "nodemon": "^2.0.20",
+    "prettier": "2.7.1"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "lint-staged": {
+    "**/*.{js}": [
+      "npx prettier --write",
+      "npx eslint --fix"
+    ]
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
