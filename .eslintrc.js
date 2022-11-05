@@ -10,4 +10,11 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {},
+  settings: {
+    'import/resolver': {
+      node: {
+        paths: ['src'],
+      },
+    },
+  },
 };

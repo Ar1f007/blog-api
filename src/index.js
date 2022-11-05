@@ -1,12 +1,12 @@
 const express = require('express');
-const connect = require('./utils/connect');
+const { logger, connect } = require('./utils');
 require('dotenv').config();
 
 const app = express();
 
 const PORT = process.env.PORT || 5000;
-console.log(process.env.DB_URI);
+
 app.listen(PORT, async () => {
-  console.log('server is running');
+  logger.info(`Server is running at port ${PORT}`);
   await connect();
 });
