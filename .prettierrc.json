@@ -6,5 +6,6 @@
   "singleQuote": true,
   "arrowParens": "always",
   "endOfLine": "auto",
-  "singleAttributePerLine": true
+  "singleAttributePerLine": true,
+  "rangeStart": 10
 }
