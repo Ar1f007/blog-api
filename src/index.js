@@ -1,6 +1,7 @@
 const express = require('express');
-const { logger, connect } = require('./utils');
 require('dotenv').config();
+
+const { logger, connect } = require('./utils');
 
 const app = express();
 
