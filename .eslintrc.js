@@ -9,7 +9,14 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
   },
-  rules: {},
+  rules: {
+    'no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: 'next|res|req|err',
+      },
+    ],
+  },
   settings: {
     'import/resolver': {
       node: {
