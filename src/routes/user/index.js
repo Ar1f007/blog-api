@@ -16,6 +16,10 @@ router
 
 router
   .route('/:userId')
+  .get(
+    middleware.validate(userValidation.userIdSchema, 'params'),
+    user.getUserDetails
+  )
   .delete(
     middleware.validate(userValidation.userIdSchema, 'params'),
     user.deleteUser

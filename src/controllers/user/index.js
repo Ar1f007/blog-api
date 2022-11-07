@@ -96,6 +96,19 @@ const getAllUsers = asyncWrapper(async (req, res) => {
   });
 });
 
+const getUserDetails = asyncWrapper(async (req, res) => {
+  const user = await User.findById(req.params.userId).exec();
+
+  if (!user) {
+    throw new AppError('No user found', StatusCodes.NOT_FOUND);
+  }
+
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    user,
+  });
+});
+
 /**
  * @desc Remove a single user
  * @route DELETE /api/users/:id
@@ -114,4 +127,10 @@ const deleteUser = asyncWrapper(async (req, res) => {
   });
 });
 
-module.exports = { signup, login, getAllUsers, deleteUser };
+module.exports = {
+  deleteUser,
+  getAllUsers,
+  getUserDetails,
+  login,
+  signup,
+};
