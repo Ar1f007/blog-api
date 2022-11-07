@@ -82,4 +82,36 @@ const login = asyncWrapper(async (req, res) => {
   });
 });
 
-module.exports = { signup, login };
+/**
+ * @desc Get list of all users
+ * @route GET /api/users
+ * @access Public
+ */
+const getAllUsers = asyncWrapper(async (req, res) => {
+  const users = await User.find().exec();
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    users,
+  });
+});
+
+/**
+ * @desc Remove a single user
+ * @route DELETE /api/users/:id
+ * @access Private
+ */
+const deleteUser = asyncWrapper(async (req, res) => {
+  const user = await User.findByIdAndDelete(req.params.userId).exec();
+
+  if (!user) {
+    throw new AppError('Could not find the user', StatusCodes.NOT_FOUND);
+  }
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    message: 'User deleted successfully',
+  });
+});
+
+module.exports = { signup, login, getAllUsers, deleteUser };

@@ -1,4 +1,5 @@
 const { StatusCodes } = require('http-status-codes');
+const { ZodError } = require('zod');
 
 /**
  *
@@ -13,6 +14,10 @@ module.exports = (Schema, property) => (req, res, next) => {
 
     next();
   } catch (error) {
+    if (!(error instanceof ZodError)) {
+      throw new Error();
+    }
+
     const errors = error.errors.map((issue) => ({
       fieldName: issue.path[0],
       message: issue.message,
