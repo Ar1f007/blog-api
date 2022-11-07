@@ -1,8 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 
 const errorHandler = (err, req, res, next) => {
-  console.log(err);
-
   let customError = {
     // set default
     statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
@@ -17,6 +15,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err.code && err.code === 11000) {
+    console.log(err);
     customError.message = `Duplicate value entered for ${Object.keys(
       err.keyValue
     )} field, please choose another value`;
@@ -30,7 +29,7 @@ const errorHandler = (err, req, res, next) => {
 
   return res
     .status(customError.statusCode)
-    .json({ message: customError.message });
+    .json({ success: false, message: customError.message });
 };
 
 module.exports = errorHandler;

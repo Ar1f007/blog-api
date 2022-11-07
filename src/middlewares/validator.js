@@ -1,6 +1,10 @@
-
 const { StatusCodes } = require('http-status-codes');
 
+/**
+ *
+ * @param {function} fn -
+ * @param {string} property - property belongs to req either body | query | params
+ */
 module.exports = (fn, property) => (req, res, next) => {
   const { error } = fn(req[property]);
 

@@ -1,6 +1,7 @@
 const router = require('express').Router();
-const user = require('../../controllers/user');
+
 const middleware = require('../../middlewares');
+const user = require('../../controllers/user');
 const userValidation = require('../../validations/user');
 
 // prettier-ignore
