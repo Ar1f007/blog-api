@@ -1,3 +1,3 @@
-const signup = require('./signup');
+const SignupSchema = require('./signup');
 
-module.exports = { signup };
+module.exports = { SignupSchema };

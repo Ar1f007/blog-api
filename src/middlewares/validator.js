@@ -2,32 +2,25 @@ const { StatusCodes } = require('http-status-codes');
 
 /**
  *
- * @param {function} fn -
- * @param {string} property - property belongs to req either body | query | params
+ * @param {ZodSchema} Schema
+ * @param {'body' | 'query' | 'params'} property
+ * @returns
  */
-module.exports = (fn, property) => (req, res, next) => {
-  const { error } = fn(req[property]);
+module.exports = (Schema, property) => (req, res, next) => {
+  try {
+    const data = Schema.parse(req[property]);
+    req.body = data;
 
-  const valid = error == null;
+    next();
+  } catch (error) {
+    const errors = error.errors.map((issue) => ({
+      fieldName: issue.path[0],
+      message: issue.message,
+    }));
 
-  if (valid) {
-    return next();
+    res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
+      success: false,
+      errors,
+    });
   }
-
-  const { details } = error;
-
-  const errors = {};
-
-  details.map((errField) => {
-    if (errField.type === 'object.unknown') {
-      errors['unknown'] = 'Provide valid values';
-      return;
-    }
-    errors[errField.context.key] = errField.message;
-  });
-
-  res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
-    success: false,
-    errors,
-  });
 };

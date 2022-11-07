@@ -1,30 +1,16 @@
+
 /**
- * Common fields Joi errors
- * @param {string} fieldName
- * @returns object - with error fields and value
+ * @desc Shows error message for non empty fields.
+ * @param {object} { fieldName: string, type: 'text' | 'number' | 'date' | string } 
+ * @returns object with required_error and invalid_type_error message associated with the given field name
  */
-const commonErrMsg = (key, fieldsArr) => {
-  const mapErrorMsg = {};
 
-  fieldsArr.map((field) => {
-    if (field === 'empty') {
-      mapErrorMsg['string.empty'] = `${key} is a required field`;
-    }
-
-    if (field === 'required') {
-      mapErrorMsg['any.required'] = `${key} is a required field`;
-    }
-
-    if (field === 'min') {
-      mapErrorMsg['string.min'] = `can not be less than {#limit} characters`;
-    }
-
-    if (field === 'max') {
-      mapErrorMsg['string.max'] = `can not be greater than {#limit} characters`;
-    }
-  });
-
-  return mapErrorMsg;
+const nonEmptyErrMsg = ({ fieldName, type }) => {
+  return {
+    required_error: `${fieldName} is required`,
+    invalid_type_error: `${fieldName} must be a type of ${type}`,
+  };
 };
 
-module.exports = commonErrMsg;
+
+module.exports = nonEmptyErrMsg;
