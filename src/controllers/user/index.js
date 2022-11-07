@@ -1,6 +1,10 @@
 const { StatusCodes } = require('http-status-codes');
 
-const { asyncWrapper, AppError, createToken } = require('../../utils');
+const {
+  asyncWrapper,
+  AppError,
+  attachCookiesToResponse,
+} = require('../../utils');
 const User = require('../../models/user');
 
 /**
@@ -25,15 +29,14 @@ const signup = asyncWrapper(async (req, res) => {
     );
   }
 
-  const jwtToken = createToken(user.id);
-
   const data = {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
-    token: jwtToken,
   };
+
+  attachCookiesToResponse(res, user.id);
 
   res.status(StatusCodes.CREATED).json({
     success: true,
@@ -61,8 +64,6 @@ const login = asyncWrapper(async (req, res) => {
     throw new AppError('Invalid credentials', StatusCodes.UNAUTHORIZED);
   }
 
-  const jwtToken = createToken(user.id);
-
   const data = {
     id: user.id,
     firstName: user.firstName,
@@ -71,8 +72,9 @@ const login = asyncWrapper(async (req, res) => {
     photo: user.photo,
     isBlocked: user.isBlocked,
     isAdmin: user.isAdmin,
-    token: jwtToken,
   };
+
+  attachCookiesToResponse(res, user.id);
 
   res.status(StatusCodes.OK).json({
     success: true,
