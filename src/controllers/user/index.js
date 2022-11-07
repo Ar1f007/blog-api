@@ -1,7 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 
-const { asyncWrapper } = require('../../utils');
-const AppError = require('../../utils/appError');
+const { asyncWrapper, AppError } = require('../../utils');
 const User = require('../../models/user');
 
 /**
@@ -34,4 +33,32 @@ const signup = asyncWrapper(async (req, res) => {
   });
 });
 
-module.exports = { signup };
+/**
+ * @desc User Login
+ * @route POST /api/users/login
+ * @access Public
+ */
+const login = asyncWrapper(async (req, res) => {
+  const user = await User.findOne({ email: req.body.email }).select(
+    '+password'
+  );
+
+  if (!user) {
+    throw new AppError('Invalid credentials', StatusCodes.UNAUTHORIZED);
+  }
+
+  const isPasswordCorrect = await user.comparePassword(req.body.password);
+
+  if (!isPasswordCorrect) {
+    throw new AppError('Invalid credentials', StatusCodes.UNAUTHORIZED);
+  }
+
+  const data = { ...user, password: undefined };
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    user: data,
+  });
+});
+
+module.exports = { signup, login };

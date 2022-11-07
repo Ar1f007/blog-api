@@ -1,3 +1,4 @@
 const SignupSchema = require('./signup');
+const LoginSchema = require('./login');
 
-module.exports = { SignupSchema };
+module.exports = { SignupSchema, LoginSchema };

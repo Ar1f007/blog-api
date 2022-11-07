@@ -9,7 +9,7 @@ const { StatusCodes } = require('http-status-codes');
 module.exports = (Schema, property) => (req, res, next) => {
   try {
     const data = Schema.parse(req[property]);
-    req.body = data;
+    req[property] = data;
 
     next();
   } catch (error) {

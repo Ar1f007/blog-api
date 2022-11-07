@@ -27,9 +27,13 @@ const errorHandler = (err, req, res, next) => {
     customError.statusCode = 404;
   }
 
-  return res
-    .status(customError.statusCode)
-    .json({ success: false, message: customError.message });
+  const stack = process.env.NODE_ENV === 'production' ? null : err.stack;
+
+  return res.status(customError.statusCode).json({
+    success: false,
+    message: customError.message,
+    stack,
+  });
 };
 
 module.exports = errorHandler;

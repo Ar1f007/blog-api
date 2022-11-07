@@ -9,4 +9,8 @@ router
   .route('/')
   .post(middleware.validate(userValidation.SignupSchema, 'body'), user.signup);
 
+router
+  .route('/login')
+  .post(middleware.validate(userValidation.LoginSchema, 'body'), user.login);
+
 module.exports = router;
