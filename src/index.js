@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 
+// users route
 app.use('/api/users', require('./routes/user'));
 
 // handles route request which does not exist

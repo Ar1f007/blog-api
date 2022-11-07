@@ -4,6 +4,11 @@ const { asyncWrapper } = require('../../utils');
 const AppError = require('../../utils/appError');
 const User = require('../../models/user');
 
+/**
+ * @desc Register new user
+ * @route POST /api/users
+ * @access Public
+ */
 const signup = asyncWrapper(async (req, res) => {
   // check if user already exist with the same email
   const userExists = await User.findOne({ email: req.body.email });
@@ -23,7 +28,7 @@ const signup = asyncWrapper(async (req, res) => {
 
   const data = { ...user._doc, password: undefined };
 
-  res.status(200).json({
+  res.status(StatusCodes.CREATED).json({
     success: true,
     user: data,
   });
