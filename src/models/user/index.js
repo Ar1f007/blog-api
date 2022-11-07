@@ -27,7 +27,11 @@ const userSchema = new mongoose.Schema(
     isBlocked: { type: Boolean, default: false },
 
     isAdmin: { type: Boolean, default: false },
-    role: { type: String, enum: ['Admin', 'Guest', 'Blogger'] },
+    role: {
+      type: String,
+      enum: ['admin', 'guest', 'user', 'blogger'],
+      default: 'user',
+    },
 
     isFollowing: { type: Boolean, default: false },
     isUnfollowing: { type: Boolean, default: false },

@@ -34,9 +34,10 @@ const signup = asyncWrapper(async (req, res) => {
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
+    role: user.role,
   };
 
-  attachCookiesToResponse(res, user.id);
+  attachCookiesToResponse(res, user);
 
   res.status(StatusCodes.CREATED).json({
     success: true,
@@ -72,9 +73,10 @@ const login = asyncWrapper(async (req, res) => {
     photo: user.photo,
     isBlocked: user.isBlocked,
     isAdmin: user.isAdmin,
+    role: user.role,
   };
 
-  attachCookiesToResponse(res, user.id);
+  attachCookiesToResponse(res, data);
 
   res.status(StatusCodes.OK).json({
     success: true,
@@ -96,6 +98,11 @@ const getAllUsers = asyncWrapper(async (req, res) => {
   });
 });
 
+/**
+ * @desc Get details of a single user
+ * @route GET /api/users/userId
+ * @access Public
+ */
 const getUserDetails = asyncWrapper(async (req, res) => {
   const user = await User.findById(req.params.userId).exec();
 
