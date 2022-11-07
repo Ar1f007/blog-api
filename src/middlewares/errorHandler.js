@@ -15,10 +15,9 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err.code && err.code === 11000) {
-    console.log(err);
-    customError.message = `Duplicate value entered for ${Object.keys(
+    customError.message = `${Object.keys(
       err.keyValue
-    )} field, please choose another value`;
+    )} already exists, please choose another`;
     customError.statusCode = 400;
   }
 

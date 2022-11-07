@@ -17,12 +17,26 @@ router
 router
   .route('/:userId')
   .get(
-    middleware.validate(userValidation.userIdSchema, 'params'),
+    middleware.validate(userValidation.UserIdSchema, 'params'),
     user.getUserDetails
   )
+  .patch(
+    middleware.validate(userValidation.UserIdSchema, 'params'),
+    middleware.validate(userValidation.UpdateUserSchema, 'body'),
+    middleware.authenticateUser,
+    user.updateUser
+  )
   .delete(
-    middleware.validate(userValidation.userIdSchema, 'params'),
+    middleware.validate(userValidation.UserIdSchema, 'params'),
     user.deleteUser
+  );
+
+router
+  .route('/profile/:userId')
+  .get(
+    middleware.validate(userValidation.UserIdSchema, 'params'),
+    middleware.authenticateUser,
+    user.myProfile
   );
 
 module.exports = router;

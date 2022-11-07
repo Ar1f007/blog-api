@@ -117,6 +117,24 @@ const getUserDetails = asyncWrapper(async (req, res) => {
 });
 
 /**
+ * @desc Profile details when user sign in
+ * @route GET /api/users/profile/:userId
+ * @access Private
+ */
+const myProfile = asyncWrapper(async (req, res) => {
+  const user = await User.findById(req.params.userId).exec();
+
+  if (!user) {
+    throw new AppError('Could not find the data', StatusCodes.NOT_FOUND);
+  }
+
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    user,
+  });
+});
+
+/**
  * @desc Remove a single user
  * @route DELETE /api/users/:id
  * @access Private
@@ -134,10 +152,35 @@ const deleteUser = asyncWrapper(async (req, res) => {
   });
 });
 
+/**
+ * @desc Update user details - name, email, bio
+ * @route PATCH /api/users/:userId
+ * @access Private
+ */
+const updateUser = asyncWrapper(async (req, res) => {
+  const user = await User.findByIdAndUpdate(
+    req.params.userId,
+    {
+      ...req.body,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  ).exec();
+
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
 module.exports = {
   deleteUser,
   getAllUsers,
   getUserDetails,
   login,
+  myProfile,
   signup,
+  updateUser,
 };
