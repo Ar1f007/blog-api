@@ -15,6 +15,30 @@ router
   .post(middleware.validate(userValidation.LoginSchema, 'body'), user.login);
 
 router
+  .route('/profile/:userId')
+  .get(
+    middleware.validate(userValidation.UserIdSchema, 'params'),
+    middleware.authenticateUser,
+    user.myProfile
+  );
+
+router
+  .route('/password/update')
+  .patch(
+    middleware.validate(userValidation.UpdatePasswordSchema, 'body'),
+    middleware.authenticateUser,
+    user.updateUserPassword
+  );
+
+router
+  .route('/follow')
+  .patch(
+    middleware.validate(userValidation.UserIdSchema, 'body'),
+    middleware.authenticateUser,
+    user.followUser
+  );
+
+router
   .route('/:userId')
   .get(
     middleware.validate(userValidation.UserIdSchema, 'params'),
@@ -29,14 +53,6 @@ router
   .delete(
     middleware.validate(userValidation.UserIdSchema, 'params'),
     user.deleteUser
-  );
-
-router
-  .route('/profile/:userId')
-  .get(
-    middleware.validate(userValidation.UserIdSchema, 'params'),
-    middleware.authenticateUser,
-    user.myProfile
   );
 
 module.exports = router;

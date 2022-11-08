@@ -16,5 +16,6 @@ module.exports = {
         argsIgnorePattern: 'next|res|req|err',
       },
     ],
+    'no-console': 1,
   },
 };

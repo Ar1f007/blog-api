@@ -175,12 +175,77 @@ const updateUser = asyncWrapper(async (req, res) => {
   });
 });
 
+/**
+ * @desc Update user password
+ * @route PATCH /api/users/password/update
+ * @access Private
+ */
+const updateUserPassword = asyncWrapper(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user.userId).select('+password').exec();
+
+  if (!user) {
+    throw new AppError(
+      'Not authorized, Login again.',
+      StatusCodes.UNAUTHORIZED
+    );
+  }
+
+  const isPasswordCorrect = await user.comparePassword(oldPassword);
+
+  if (!isPasswordCorrect) {
+    throw new AppError('Invalid old password', StatusCodes.UNAUTHORIZED);
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    message: 'Success! Password updated.',
+  });
+});
+
+const followUser = asyncWrapper(async (req, res) => {
+  // 1. update the follower's "followers" field with my id
+  // id of the user who is following
+  const followerId = req.user.userId;
+
+  // id of the user to be followed
+  const toBeFollowedId = req.body.userId;
+
+  if (followerId === toBeFollowedId) {
+    throw new AppError('Can not follow yourself', StatusCodes.BAD_REQUEST);
+  }
+
+  const user = await User.findByIdAndUpdate(toBeFollowedId, {
+    $push: { followers: followerId },
+  }).exec();
+
+  if (!user) {
+    throw new AppError('Could not perform the task', StatusCodes.CONFLICT);
+  }
+
+  // 2. update my own isFollowing list with follower's id
+  await User.findByIdAndUpdate(followerId, {
+    $push: { following: toBeFollowedId },
+  }).exec();
+
+  return res
+    .status(StatusCodes.OK)
+    .json({ success: true, message: 'Success!' });
+});
+
 module.exports = {
   deleteUser,
+  followUser,
   getAllUsers,
   getUserDetails,
   login,
   myProfile,
   signup,
   updateUser,
+  updateUserPassword,
 };
+
