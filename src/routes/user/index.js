@@ -4,7 +4,6 @@ const middleware = require('../../middlewares');
 const user = require('../../controllers/user');
 const userValidation = require('../../validations/user');
 
-// prettier-ignore
 router
   .route('/')
   .post(middleware.validate(userValidation.SignupSchema, 'body'), user.signup)
@@ -36,6 +35,14 @@ router
     middleware.validate(userValidation.UserIdSchema, 'body'),
     middleware.authenticateUser,
     user.followUser
+  );
+
+router
+  .route('/unfollow')
+  .patch(
+    middleware.validate(userValidation.UserIdSchema, 'body'),
+    middleware.authenticateUser,
+    user.unfollowUser
   );
 
 router
