@@ -3,6 +3,7 @@ const router = require('express').Router();
 const middleware = require('../../middlewares');
 const user = require('../../controllers/user');
 const userValidation = require('../../validations/user');
+const { ADMIN } = require('../../constants');
 
 router
   .route('/')
@@ -50,6 +51,7 @@ router
   .patch(
     middleware.validate(userValidation.UserIdSchema, 'body'),
     middleware.authenticateUser,
+    middleware.authorizePermission(ADMIN),
     user.blockUser
   );
 
@@ -58,6 +60,7 @@ router
   .patch(
     middleware.validate(userValidation.UserIdSchema, 'body'),
     middleware.authenticateUser,
+    middleware.authorizePermission(ADMIN),
     user.unblockUser
   );
 
