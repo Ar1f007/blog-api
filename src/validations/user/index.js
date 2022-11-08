@@ -1,13 +1,15 @@
-const SignupSchema = require('./signup');
+const EmailSchema = require('./email');
 const LoginSchema = require('./login');
-const UserIdSchema = require('./userId');
-const UpdateUserSchema = require('./update-user');
+const SignupSchema = require('./signup');
 const UpdatePasswordSchema = require('./update-password');
+const UpdateUserSchema = require('./update-user');
+const UserIdSchema = require('./userId');
 
 module.exports = {
-  SignupSchema,
+  EmailSchema,
   LoginSchema,
-  UserIdSchema,
-  UpdateUserSchema,
+  SignupSchema,
   UpdatePasswordSchema,
+  UpdateUserSchema,
+  UserIdSchema,
 };

@@ -69,6 +69,13 @@ router
   .get(middleware.authenticateUser, user.verifyAccount);
 
 router
+  .route('/forget-password-code')
+  .post(
+    middleware.validate(userValidation.EmailSchema, 'body'),
+    user.generateForgetPasswordCode
+  );
+
+router
   .route('/:userId')
   .get(
     middleware.validate(userValidation.UserIdSchema, 'params'),

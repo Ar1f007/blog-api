@@ -372,6 +372,11 @@ const unblockUser = asyncWrapper(async (req, res) => {
   res.status(StatusCodes.OK).json({ success: true, message: 'Success!' });
 });
 
+/**
+ * @desc Verify user account
+ * @route GET /api/users/verify-account/:token
+ * @access Private
+ */
 const verifyAccount = asyncWrapper(async (req, res) => {
   const token = req.params.token;
 
@@ -396,14 +401,32 @@ const verifyAccount = asyncWrapper(async (req, res) => {
   await user.save();
 
   return res
-    .status(StatusCodes.OK)
+    .status(StatusCodes.ACCEPTED)
     .json({ success: true, message: 'Account verified successfully' });
+});
+
+const generateForgetPasswordCode = asyncWrapper(async (req, res) => {
+  const user = await User.findOne({ email: req.body.email }).exec();
+
+  if (!user) {
+    throw new AppError('Invalid email');
+  }
+
+  await user.genPasswordResetCode();
+
+  await user.save();
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    message: 'Enter the code we sent to your email here',
+  });
 });
 
 module.exports = {
   blockUser,
   deleteUser,
   followUser,
+  generateForgetPasswordCode,
   getAllUsers,
   getUserDetails,
   login,
