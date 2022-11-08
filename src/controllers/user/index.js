@@ -240,19 +240,27 @@ const followUser = asyncWrapper(async (req, res) => {
   }
 
   // add your id to the follower's 'followers' list
-  const user = await User.findByIdAndUpdate(toBeFollowedUserId, {
-    $push: { followers: followerId },
-    isFollowing: true,
-  }).exec();
+  const user = await User.findByIdAndUpdate(
+    toBeFollowedUserId,
+    {
+      $push: { followers: followerId },
+      isFollowing: true,
+    },
+    { new: true }
+  ).exec();
 
   if (!user) {
     throw new AppError('Could not perform the task', StatusCodes.CONFLICT);
   }
 
   // 2. update your own "isFollowing" field with the user id who you followed
-  await User.findByIdAndUpdate(followerId, {
-    $push: { following: toBeFollowedUserId },
-  }).exec();
+  await User.findByIdAndUpdate(
+    followerId,
+    {
+      $push: { following: toBeFollowedUserId },
+    },
+    { new: true }
+  ).exec();
 
   return res
     .status(StatusCodes.OK)
@@ -280,19 +288,27 @@ const unfollowUser = asyncWrapper(async (req, res) => {
   }
 
   // remove your id from the to be unfollowed user's 'followers' list
-  const user = await User.findByIdAndUpdate(toBeUnfollowedUserId, {
-    $pull: { followers: unfollowerId },
-    isFollowing: false,
-  }).exec();
+  const user = await User.findByIdAndUpdate(
+    toBeUnfollowedUserId,
+    {
+      $pull: { followers: unfollowerId },
+      isFollowing: false,
+    },
+    { new: true }
+  ).exec();
 
   if (!user) {
     throw new AppError('Could not perform the task', StatusCodes.CONFLICT);
   }
 
   // 2. update your own "isFollowing" field with the user id who you unfollowed
-  await User.findByIdAndUpdate(unfollowerId, {
-    $pull: { following: toBeUnfollowedUserId },
-  }).exec();
+  await User.findByIdAndUpdate(
+    unfollowerId,
+    {
+      $pull: { following: toBeUnfollowedUserId },
+    },
+    { new: true }
+  ).exec();
 
   return res
     .status(StatusCodes.OK)
