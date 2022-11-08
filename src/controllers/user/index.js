@@ -1,4 +1,5 @@
 const { StatusCodes } = require('http-status-codes');
+const crypto = require('crypto');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -371,6 +372,34 @@ const unblockUser = asyncWrapper(async (req, res) => {
   res.status(StatusCodes.OK).json({ success: true, message: 'Success!' });
 });
 
+const verifyAccount = asyncWrapper(async (req, res) => {
+  const token = req.params.token;
+
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  const user = await User.findOne({
+    accountVerificationToken: hashedToken,
+    accountVerificationTokenExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    throw new AppError(
+      'Token is invalid or has expired',
+      StatusCodes.BAD_REQUEST
+    );
+  }
+
+  user.isAccountVerified = true;
+  user.accountVerificationToken = undefined;
+  user.accountVerificationTokenExpires = undefined;
+
+  await user.save();
+
+  return res
+    .status(StatusCodes.OK)
+    .json({ success: true, message: 'Account verified successfully' });
+});
+
 module.exports = {
   blockUser,
   deleteUser,
@@ -384,5 +413,6 @@ module.exports = {
   unfollowUser,
   updateUser,
   updateUserPassword,
+  verifyAccount,
 };
 

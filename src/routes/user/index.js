@@ -65,6 +65,10 @@ router
   );
 
 router
+  .route('/verify-account/:token')
+  .get(middleware.authenticateUser, user.verifyAccount);
+
+router
   .route('/:userId')
   .get(
     middleware.validate(userValidation.UserIdSchema, 'params'),
