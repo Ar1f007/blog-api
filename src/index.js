@@ -14,6 +14,9 @@ app.use(cookieParser());
 // users route
 app.use('/api/users', require('./routes/user'));
 
+// email route
+app.use('/api/email', require('./routes/email'));
+
 // handles route request which does not exist
 app.use(middleware.notFound);
 
