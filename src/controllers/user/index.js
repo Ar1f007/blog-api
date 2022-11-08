@@ -207,9 +207,14 @@ const updateUserPassword = asyncWrapper(async (req, res) => {
   });
 });
 
+/**
+ * @desc Follow user
+ * @route PATCH /api/users/follow
+ * @access Private
+ */
 const followUser = asyncWrapper(async (req, res) => {
-  // 1. update the follower's "followers" field with my id
-  // id of the user who is following
+  // 1. find the user you want to follow and update it's "followers" with your id
+  // id of you
   const followerId = req.user.userId;
 
   // id of the user to be followed
@@ -219,6 +224,22 @@ const followUser = asyncWrapper(async (req, res) => {
     throw new AppError('Can not follow yourself', StatusCodes.BAD_REQUEST);
   }
 
+  // check to see if you're already following the user
+  const targetUser = await User.findById(toBeFollowedId).exec();
+
+  if (!targetUser) {
+    throw new AppError('User was not found', StatusCodes.BAD_REQUEST);
+  }
+
+  const alreadyFollowing = targetUser.followers.find(
+    (id) => id.toString() === followerId.toString()
+  );
+
+  if (alreadyFollowing) {
+    throw new AppError('You are already following', StatusCodes.BAD_REQUEST);
+  }
+
+  // add your id to the follower's 'followers' list
   const user = await User.findByIdAndUpdate(toBeFollowedId, {
     $push: { followers: followerId },
   }).exec();
@@ -227,7 +248,7 @@ const followUser = asyncWrapper(async (req, res) => {
     throw new AppError('Could not perform the task', StatusCodes.CONFLICT);
   }
 
-  // 2. update my own isFollowing list with follower's id
+  // 2. update your own "isFollowing" field with the user id who you followed
   await User.findByIdAndUpdate(followerId, {
     $push: { following: toBeFollowedId },
   }).exec();
