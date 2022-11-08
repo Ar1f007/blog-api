@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+
 const saltRounds = 10;
 
 const userSchema = new mongoose.Schema(
@@ -99,6 +101,23 @@ userSchema.pre('save', async function (next) {
  */
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+/**
+ * Generates verification token for the user
+ * @returns {String} token
+ */
+userSchema.methods.generateAccountVerificationToken = async function () {
+  const token = crypto.randomBytes(32).toString('hex');
+
+  this.accountVerificationToken = crypto
+    .createHash('sha256')
+    .update(token)
+    .digest('hex');
+
+  this.accountVerificationTokenExpires = Date.now() + 10 * 60 * 1000; // 10 min
+
+  return token;
 };
 
 const User = mongoose.model('User', userSchema);

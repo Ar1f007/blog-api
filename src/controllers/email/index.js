@@ -1,8 +1,8 @@
 const sgMail = require('@sendgrid/mail');
 const { StatusCodes } = require('http-status-codes');
+
 const Email = require('../../models/email');
 const { asyncWrapper, AppError } = require('../../utils');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendEmail = asyncWrapper(async (req, res) => {
   const { from, to, subject, message } = req.body;

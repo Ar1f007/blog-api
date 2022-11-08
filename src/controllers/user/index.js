@@ -1,9 +1,12 @@
 const { StatusCodes } = require('http-status-codes');
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const {
   asyncWrapper,
   AppError,
   attachCookiesToResponse,
+  sendAccountVerifyMail,
 } = require('../../utils');
 const User = require('../../models/user');
 
@@ -28,6 +31,11 @@ const signup = asyncWrapper(async (req, res) => {
       StatusCodes.CONFLICT
     );
   }
+
+  const verificationToken = await user.generateAccountVerificationToken();
+  await user.save();
+
+  await sendAccountVerifyMail(verificationToken, user);
 
   const data = {
     id: user.id,
