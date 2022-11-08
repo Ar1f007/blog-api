@@ -268,8 +268,8 @@ const followUser = asyncWrapper(async (req, res) => {
 });
 
 /**
- * @desc Follow user
- * @route PATCH /api/users/follow
+ * @desc Unfollow user
+ * @route PATCH /api/users/unfollow
  * @access Private
  */
 const unfollowUser = asyncWrapper(async (req, res) => {
@@ -315,7 +315,56 @@ const unfollowUser = asyncWrapper(async (req, res) => {
     .json({ success: true, message: 'Success!' });
 });
 
+/**
+ * @desc Block a user
+ * @route PATCH /api/users/block-user
+ * @access Private
+ */
+const blockUser = asyncWrapper(async (req, res) => {
+  const { userId } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { isBlocked: true },
+    { new: true }
+  );
+
+  if (!user) {
+    throw new AppError(
+      'Could not perform the task',
+      StatusCodes.EXPECTATION_FAILED
+    );
+  }
+
+  res.status(StatusCodes.OK).json({ success: true, message: 'Success!' });
+});
+
+/**
+ * @desc Unblock a user
+ * @route PATCH /api/users/unblock-user
+ * @access Private
+ */
+const unblockUser = asyncWrapper(async (req, res) => {
+  const { userId } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { isBlocked: false },
+    { new: true }
+  );
+
+  if (!user) {
+    throw new AppError(
+      'Could not perform the task',
+      StatusCodes.EXPECTATION_FAILED
+    );
+  }
+
+  res.status(StatusCodes.OK).json({ success: true, message: 'Success!' });
+});
+
 module.exports = {
+  blockUser,
   deleteUser,
   followUser,
   getAllUsers,
@@ -323,8 +372,9 @@ module.exports = {
   login,
   myProfile,
   signup,
+  unblockUser,
+  unfollowUser,
   updateUser,
   updateUserPassword,
-  unfollowUser,
 };
 

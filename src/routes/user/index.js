@@ -46,6 +46,22 @@ router
   );
 
 router
+  .route('/block-user')
+  .patch(
+    middleware.validate(userValidation.UserIdSchema, 'body'),
+    middleware.authenticateUser,
+    user.blockUser
+  );
+
+router
+  .route('/unblock-user')
+  .patch(
+    middleware.validate(userValidation.UserIdSchema, 'body'),
+    middleware.authenticateUser,
+    user.unblockUser
+  );
+
+router
   .route('/:userId')
   .get(
     middleware.validate(userValidation.UserIdSchema, 'params'),
