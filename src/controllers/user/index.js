@@ -7,7 +7,7 @@ const {
   asyncWrapper,
   AppError,
   attachCookiesToResponse,
-  sendAccountVerifyMail,
+  sendEmail,
 } = require('../../utils');
 const User = require('../../models/user');
 
@@ -36,7 +36,7 @@ const signup = asyncWrapper(async (req, res) => {
   const verificationToken = await user.generateAccountVerificationToken();
   await user.save();
 
-  await sendAccountVerifyMail(verificationToken, user);
+  await sendEmail(verificationToken, user);
 
   const data = {
     id: user.id,
@@ -405,16 +405,26 @@ const verifyAccount = asyncWrapper(async (req, res) => {
     .json({ success: true, message: 'Account verified successfully' });
 });
 
-const generateForgetPasswordCode = asyncWrapper(async (req, res) => {
+/**
+ * @desc Create code for resetting password
+ * @route POST /api/users/forget-password-code
+ * @access public
+ */
+const createForgetPasswordCode = asyncWrapper(async (req, res) => {
   const user = await User.findOne({ email: req.body.email }).exec();
 
   if (!user) {
-    throw new AppError('Invalid email');
+    throw new AppError(
+      'There is no user with email address.',
+      StatusCodes.BAD_REQUEST
+    );
   }
 
-  await user.genPasswordResetCode();
+  const code = await user.createPasswordResetCode();
 
   await user.save();
+
+  await sendEmail(code, user, false);
 
   res.status(StatusCodes.OK).json({
     success: true,
@@ -426,7 +436,7 @@ module.exports = {
   blockUser,
   deleteUser,
   followUser,
-  generateForgetPasswordCode,
+  createForgetPasswordCode,
   getAllUsers,
   getUserDetails,
   login,

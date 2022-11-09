@@ -6,8 +6,8 @@ const createToken = require('./jwt/create-jwt-token');
 const isTokenValid = require('./jwt/is-token-valid');
 const logger = require('./logger');
 const nonEmptyFieldErrMsg = require('./populate-error-msg');
-const sendAccountVerifyMail = require('./account-verify-mail');
-const sendMail = require('./send-email');
+const sendEmail = require('./send-email');
+const send = require('./send');
 const validator = require('./validator');
 
 module.exports = {
@@ -19,7 +19,7 @@ module.exports = {
   isTokenValid,
   logger,
   nonEmptyFieldErrMsg,
-  sendAccountVerifyMail,
+  sendEmail,
   validator,
-  sendMail,
+  send,
 };

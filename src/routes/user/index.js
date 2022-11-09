@@ -72,7 +72,7 @@ router
   .route('/forget-password-code')
   .post(
     middleware.validate(userValidation.EmailSchema, 'body'),
-    user.generateForgetPasswordCode
+    user.createForgetPasswordCode
   );
 
 router

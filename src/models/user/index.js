@@ -120,7 +120,7 @@ userSchema.methods.generateAccountVerificationToken = async function () {
   return token;
 };
 
-userSchema.methods.genPasswordResetCode = async function () {
+userSchema.methods.createPasswordResetCode = async function () {
   const code = crypto.randomBytes(3).toString('hex');
 
   this.passwordResetToken = crypto
