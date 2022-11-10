@@ -4,7 +4,7 @@ const postSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      require: [true, 'Title is required'],
+      required: [true, 'Title is required'],
     },
     category: {
       type: String,

@@ -14,6 +14,9 @@ app.use(cookieParser());
 // users route
 app.use('/api/users', require('./routes/user'));
 
+// post route
+app.use('/api/posts', require('./routes/post'));
+
 // email route
 app.use('/api/email', require('./routes/email'));
 
