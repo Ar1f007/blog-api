@@ -12,6 +12,7 @@ const {
   uploadToCloudinary,
 } = require('../../utils');
 const User = require('../../models/user');
+const { ADMIN } = require('../../constants');
 
 /**
  * @desc Register new user
@@ -76,6 +77,9 @@ const login = asyncWrapper(async (req, res) => {
     throw new AppError('Invalid credentials', StatusCodes.UNAUTHORIZED);
   }
 
+  user.active = true;
+  await user.save();
+
   const data = {
     id: user.id,
     firstName: user.firstName,
@@ -96,12 +100,12 @@ const login = asyncWrapper(async (req, res) => {
 });
 
 /**
- * @desc Get list of all users
+ * @desc Get list of all active users
  * @route GET /api/users
  * @access Public
  */
 const getAllUsers = asyncWrapper(async (req, res) => {
-  const users = await User.find().exec();
+  const users = await User.find({ active: true }).exec();
 
   res.status(StatusCodes.OK).json({
     success: true,
@@ -146,21 +150,52 @@ const myProfile = asyncWrapper(async (req, res) => {
 });
 
 /**
- * @desc Remove a single user
- * @route DELETE /api/users/:id
+ * @desc Deactivates user
+ * @route PATCH /api/users/:id
  * @access Private
  */
-const deleteUser = asyncWrapper(async (req, res) => {
-  const user = await User.findByIdAndDelete(req.params.userId).exec();
+const deactivateUser = asyncWrapper(async (req, res) => {
+  const user = await User.findByIdAndUpdate(
+    req.user.userId,
+    {
+      active: false,
+    },
+    { new: true }
+  ).exec();
 
   if (!user) {
-    throw new AppError('Could not find the user', StatusCodes.NOT_FOUND);
+    throw new AppError('No user found', StatusCodes.NOT_FOUND);
   }
 
   res.status(StatusCodes.OK).json({
     success: true,
-    message: 'User deleted successfully',
+    message: 'Account deactivated successfully',
   });
+});
+
+/**
+ * @desc Deletes a user permanently
+ * @route DELETE /api/users/:id
+ * @access Private
+ */
+const deleteUser = asyncWrapper(async (req, res) => {
+  const role = req.user.role;
+
+  if (req.user.userId !== req.params.userId && role !== ADMIN) {
+    throw new AppError(
+      'You are not authorized to perform this task',
+      StatusCodes.FORBIDDEN
+    );
+  }
+  const user = await User.findByIdAndDelete(req.params.userId).exec();
+
+  if (!user) {
+    throw new AppError('No user found', StatusCodes.NOT_FOUND);
+  }
+
+  res
+    .status(StatusCodes.OK)
+    .json({ success: true, message: 'Account is deleted.' });
 });
 
 /**
@@ -492,6 +527,7 @@ const uploadAvatar = asyncWrapper(async (req, res) => {
 module.exports = {
   blockUser,
   createForgetPasswordCode,
+  deactivateUser,
   deleteUser,
   followUser,
   getAllUsers,

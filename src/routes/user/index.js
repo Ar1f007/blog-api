@@ -92,6 +92,10 @@ router
   );
 
 router
+  .route('/deactivate-account')
+  .patch(middleware.authenticateUser, user.deactivateUser);
+
+router
   .route('/:userId')
   .get(
     middleware.validate(userValidation.UserIdSchema, 'params'),
@@ -105,6 +109,7 @@ router
   )
   .delete(
     middleware.validate(userValidation.UserIdSchema, 'params'),
+    middleware.authenticateUser,
     user.deleteUser
   );
 
