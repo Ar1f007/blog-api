@@ -1,13 +1,15 @@
 const { StatusCodes } = require('http-status-codes');
+const { unlink } = require('fs/promises');
 const crypto = require('crypto');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const {
-  asyncWrapper,
   AppError,
+  asyncWrapper,
   attachCookiesToResponse,
   sendEmail,
+  uploadToCloudinary,
 } = require('../../utils');
 const User = require('../../models/user');
 
@@ -467,9 +469,24 @@ const resetPassword = asyncWrapper(async (req, res) => {
 });
 
 const uploadAvatar = asyncWrapper(async (req, res) => {
-  console.log(req.file);
+  const filePath = `public/img/users/${req.file.filename}`;
+  const imgUrl = await uploadToCloudinary(filePath);
 
-  res.json({ file: req.file });
+  const userId = req.user.userId;
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { photo: imgUrl },
+    { new: true }
+  ).exec();
+
+  await unlink(filePath);
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    photo: user.photo,
+    message: 'Image uploaded successfully',
+  });
 });
 
 module.exports = {

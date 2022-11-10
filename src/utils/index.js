@@ -1,3 +1,4 @@
+const { uploadToCloudinary } = require('./cloudinary.js');
 const AppError = require('./appError.js');
 const asyncWrapper = require('./async-wrapper');
 const attachCookiesToResponse = require('./jwt/attach-cookies-to-response');
@@ -6,8 +7,8 @@ const createToken = require('./jwt/create-jwt-token');
 const isTokenValid = require('./jwt/is-token-valid');
 const logger = require('./logger');
 const nonEmptyFieldErrMsg = require('./populate-error-msg');
-const sendEmail = require('./send-email');
 const send = require('./send');
+const sendEmail = require('./send-email');
 const validator = require('./validator');
 
 module.exports = {
@@ -19,7 +20,8 @@ module.exports = {
   isTokenValid,
   logger,
   nonEmptyFieldErrMsg,
-  sendEmail,
-  validator,
   send,
+  sendEmail,
+  uploadToCloudinary,
+  validator,
 };
