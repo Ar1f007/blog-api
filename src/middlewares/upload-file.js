@@ -31,7 +31,7 @@ const uploadAvatar = uploadFiles.single('avatar');
 const resizeAvatar = async (req, res, next) => {
   if (!req.file) return next();
 
-  req.file.filename = `user-${req.user.userId}-${Date.now()}`;
+  req.file.filename = `user-${req.user.userId}-${Date.now()}.webp`;
 
   await sharp(req.file.buffer)
     .resize(250, 250)
