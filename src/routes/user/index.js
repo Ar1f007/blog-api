@@ -86,8 +86,9 @@ router
   .route('/upload-files')
   .patch(
     middleware.authenticateUser,
-    middleware.uploadFiles.single('avatar'),
-    user.uploadProfilePhoto
+    middleware.uploadAvatar,
+    middleware.resizeAvatar,
+    user.uploadAvatar
   );
 
 router
