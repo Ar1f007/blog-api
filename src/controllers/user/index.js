@@ -415,7 +415,7 @@ const createForgetPasswordCode = asyncWrapper(async (req, res) => {
 
   if (!user) {
     throw new AppError(
-      'There is no user with email address.',
+      'There is no user with this email address.',
       StatusCodes.BAD_REQUEST
     );
   }
@@ -432,15 +432,45 @@ const createForgetPasswordCode = asyncWrapper(async (req, res) => {
   });
 });
 
+/**
+ * @desc Reset password for the account
+ * @route POST /api/users/reset-password
+ * @access Public
+ */
+const resetPassword = asyncWrapper(async (req, res) => {
+  const { code, password } = req.body;
+
+  const hashedToken = crypto.createHash('sha256').update(code).digest('hex');
+  const user = await User.findOne({ passwordResetToken: hashedToken });
+
+  if (!user) {
+    throw new AppError(
+      'Code is invalid or has expired',
+      StatusCodes.BAD_REQUEST
+    );
+  }
+
+  user.password = password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  await user.save();
+
+  res
+    .status(StatusCodes.ACCEPTED)
+    .json({ success: true, message: 'Password reset successful!' });
+});
+
 module.exports = {
   blockUser,
+  createForgetPasswordCode,
   deleteUser,
   followUser,
-  createForgetPasswordCode,
   getAllUsers,
   getUserDetails,
   login,
   myProfile,
+  resetPassword,
   signup,
   unblockUser,
   unfollowUser,

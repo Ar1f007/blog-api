@@ -10,12 +10,12 @@ const sendEmail = async (token, user, verify = true) => {
     Please verify your account by clicking on this link ${link}, so you can make yourself eligible to post content soon. Verify now within 10minutes, otherwise ignore this message.`;
   }
 
-  message = `Your password reset code: <strong>${token}<strong/>. Verify within 10 minutes`;
+  message = `Your password reset code: <strong>${token}</strong>. Verify within 10 minutes`;
 
   const msg = {
     to: user.email,
     from: 'blanknoize8@gmail.com',
-    subject: 'Verify your account',
+    subject: verify ? 'Verify your account' : 'Reset your password',
     html: message,
   };
 

@@ -76,6 +76,13 @@ router
   );
 
 router
+  .route('/reset-password')
+  .post(
+    middleware.validate(userValidation.ResetPasswordSchema, 'body'),
+    user.resetPassword
+  );
+
+router
   .route('/:userId')
   .get(
     middleware.validate(userValidation.UserIdSchema, 'params'),
