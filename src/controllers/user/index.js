@@ -466,6 +466,12 @@ const resetPassword = asyncWrapper(async (req, res) => {
     .json({ success: true, message: 'Password reset successful!' });
 });
 
+const uploadProfilePhoto = asyncWrapper(async (req, res) => {
+  console.log(req.file);
+
+  res.json({ file: req.file });
+});
+
 module.exports = {
   blockUser,
   createForgetPasswordCode,
@@ -482,5 +488,6 @@ module.exports = {
   updateUser,
   updateUserPassword,
   verifyAccount,
+  uploadProfilePhoto,
 };
 

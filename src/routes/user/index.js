@@ -83,6 +83,14 @@ router
   );
 
 router
+  .route('/upload-files')
+  .patch(
+    middleware.authenticateUser,
+    middleware.uploadFiles.single('avatar'),
+    user.uploadProfilePhoto
+  );
+
+router
   .route('/:userId')
   .get(
     middleware.validate(userValidation.UserIdSchema, 'params'),
