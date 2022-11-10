@@ -441,7 +441,12 @@ const resetPassword = asyncWrapper(async (req, res) => {
   const { code, password } = req.body;
 
   const hashedToken = crypto.createHash('sha256').update(code).digest('hex');
-  const user = await User.findOne({ passwordResetToken: hashedToken });
+
+  // find the user with hashed token - the token which has not expired yet
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
 
   if (!user) {
     throw new AppError(

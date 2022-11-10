@@ -77,7 +77,7 @@ router
 
 router
   .route('/reset-password')
-  .post(
+  .patch(
     middleware.validate(userValidation.ResetPasswordSchema, 'body'),
     user.resetPassword
   );
