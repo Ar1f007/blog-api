@@ -9,6 +9,7 @@ const logger = require('./logger');
 const nonEmptyFieldErrMsg = require('./populate-error-msg');
 const send = require('./send');
 const sendEmail = require('./send-email');
+const slugify = require('./slugify');
 const validator = require('./validator');
 
 module.exports = {
@@ -22,6 +23,7 @@ module.exports = {
   nonEmptyFieldErrMsg,
   send,
   sendEmail,
+  slugify,
   uploadToCloudinary,
   validator,
 };
