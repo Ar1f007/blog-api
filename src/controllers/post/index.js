@@ -4,6 +4,11 @@ const { asyncWrapper, slugify } = require('../../utils');
 const { getCategoryId, getTagIds } = require('./util');
 const { Post } = require('../../models');
 
+/**
+ * @desc Add a new post
+ * @route POST /api/posts
+ * @access Private
+ */
 const createPost = asyncWrapper(async (req, res) => {
   const {
     category: categoryName,
