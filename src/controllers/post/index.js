@@ -3,6 +3,7 @@ const { StatusCodes } = require('http-status-codes');
 const { asyncWrapper, slugify } = require('../../utils');
 const { getCategoryId, getTagIds } = require('./util');
 const { Post } = require('../../models');
+const { uploadCoverImage } = require('./upload-cover-image');
 
 /**
  * @desc Add a new post
@@ -10,30 +11,47 @@ const { Post } = require('../../models');
  * @access Private
  */
 const createPost = asyncWrapper(async (req, res) => {
+  let postData = {};
+
   const {
-    category: categoryName,
+    category,
     tags,
     title,
     published_at,
     description,
-    authorId,
   } = req.body;
 
+  const authorId = req.user.userId;
+
+  const url = uploadCoverImage(req.file.filename);
+
+
+  
   const slugTitle = slugify(title);
 
-  const categoryId = await getCategoryId(categoryName);
+  postData.authorId = authorId;
+  postData.coverImage = url;
+  postData.published_at = published_at;  
+  postData.title = title;
+  postData.slug = slugTitle;
+  postData.description = description;
 
-  const tagIds = await getTagIds(tags);
+  if (category.categoryId) {
+    postData.category = category.categoryId;
+  }
 
-  const postData = {
-    title,
-    authorId,
-    description,
-    published_at,
-    category: categoryId,
-    slug: slugTitle,
-    tags: tagIds,
-  };
+  if (category.newCategoryName) {
+    postData.category = await getCategoryId(category.newCategoryName);
+  }
+
+  if (tags.ids) {
+    postData.tags = tags.ids;
+  }
+
+  if (tags.newTagNames) {
+    const newTagIds = await getTagIds(tags.newTagNames);
+    postData.tags = [...postData.tags, ...newTagIds];
+  }    
 
   const post = await Post.create(postData);
 

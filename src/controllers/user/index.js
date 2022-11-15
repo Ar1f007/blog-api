@@ -505,7 +505,7 @@ const resetPassword = asyncWrapper(async (req, res) => {
 
 const uploadAvatar = asyncWrapper(async (req, res) => {
   const filePath = `public/img/users/${req.file.filename}`;
-  const imgUrl = await uploadToCloudinary(filePath);
+  const imgUrl = await uploadToCloudinary(filePath, 'users');
 
   const userId = req.user.userId;
 

@@ -3,7 +3,6 @@ const { StatusCodes } = require('http-status-codes');
 const multer = require('multer');
 const sharp = require('sharp');
 
-// upload to server memory for temporary time
 const storage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
@@ -12,7 +11,7 @@ const multerFilter = (req, file, cb) => {
   } else {
     cb(
       new AppError(
-        'Not an image! lease upload only images',
+        'Not an image! Only images are allowed',
         StatusCodes.BAD_REQUEST
       ),
       false
@@ -27,6 +26,7 @@ const uploadFiles = multer({
 });
 
 const uploadAvatar = uploadFiles.single('avatar');
+const uploadCoverImage = uploadFiles.single('coverImage');
 
 const resizeAvatar = async (req, res, next) => {
   if (!req.file) return next();
@@ -42,4 +42,23 @@ const resizeAvatar = async (req, res, next) => {
   next();
 };
 
-module.exports = { uploadAvatar, resizeAvatar };
+const resizeCoverImage = async (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${req.user.userId}-${Date.now()}.webp`;
+
+  await sharp(req.file.buffer)
+    .resize({ width: 820, height: 320 })
+    .toFormat('webp')
+    .webp({ quality: 90 })
+    .toFile(`public/img/posts/${req.file.filename}`);
+
+  next();
+};
+
+module.exports = { 
+  resizeAvatar, 
+  resizeCoverImage,
+  uploadAvatar, 
+  uploadCoverImage, 
+ };

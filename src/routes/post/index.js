@@ -7,8 +7,10 @@ const router = require('express').Router();
 router
   .route('/')
   .post(
-    middleware.validate(PostValidation.CreatePostSchema, 'body'),
     middleware.authenticateUser,
+    middleware.uploadCoverImage,
+    middleware.resizeCoverImage,
+    middleware.validate(PostValidation.CreatePostSchema, 'body'),
     post.createPost
   );
 

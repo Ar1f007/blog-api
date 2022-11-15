@@ -9,10 +9,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_SECRET_KEY,
 });
 
-exports.uploadToCloudinary = async (fileToUpload) => {
+exports.uploadToCloudinary = async (fileToUpload, folder) => {
   try {
     const data = await cloudinary.uploader.upload(fileToUpload, {
-      folder: 'blog/users',
+      folder: `blog/${folder}`,
     });
 
     return data.secure_url;

@@ -6,8 +6,6 @@ exports.CreatePostSchema = z.object({
 
   description: z.string().trim().min(15),
 
-  authorId: IdSchema,
-
   category: z
     .object({
       categoryId: IdSchema,
