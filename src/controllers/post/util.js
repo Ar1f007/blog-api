@@ -1,13 +1,13 @@
 const { StatusCodes } = require('http-status-codes');
 const { Tag, Category } = require('../../models');
 const { AppError } = require('../../utils');
-const { findOrCreateOne } = require('./find-or-create-doc');
+const { create } = require('./find-or-create-doc');
 
 /**
  * @param {string} tagName
  * @returns tag id
  */
-const tag = async (tagName) => await findOrCreateOne(Tag, tagName);
+const tag = async (tagName) => await create(Tag, tagName);
 
 /**
  *
@@ -30,7 +30,7 @@ exports.getTagIds = async (tags) => {
  * @return category id
  */
 exports.getCategoryId = async (categoryName) => {
-  const categoryId = await findOrCreateOne(Category, categoryName);
+  const categoryId = await create(Category, categoryName);
 
   return categoryId;
 };

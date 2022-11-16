@@ -13,25 +13,17 @@ const { uploadCoverImage } = require('./upload-cover-image');
 const createPost = asyncWrapper(async (req, res) => {
   let postData = {};
 
-  const {
-    category,
-    tags,
-    title,
-    published_at,
-    description,
-  } = req.body;
+  const { category, tags, title, published_at, description } = req.body;
 
   const authorId = req.user.userId;
 
   const url = uploadCoverImage(req.file.filename);
 
-
-  
   const slugTitle = slugify(title);
 
   postData.authorId = authorId;
   postData.coverImage = url;
-  postData.published_at = published_at;  
+  postData.published_at = published_at;
   postData.title = title;
   postData.slug = slugTitle;
   postData.description = description;
@@ -51,7 +43,7 @@ const createPost = asyncWrapper(async (req, res) => {
   if (tags.newTagNames) {
     const newTagIds = await getTagIds(tags.newTagNames);
     postData.tags = [...postData.tags, ...newTagIds];
-  }    
+  }
 
   const post = await Post.create(postData);
 
