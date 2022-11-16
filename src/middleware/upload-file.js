@@ -56,9 +56,9 @@ const resizeCoverImage = async (req, res, next) => {
   next();
 };
 
-module.exports = { 
-  resizeAvatar, 
+module.exports = {
+  resizeAvatar,
   resizeCoverImage,
-  uploadAvatar, 
-  uploadCoverImage, 
- };
+  uploadAvatar,
+  uploadCoverImage,
+};

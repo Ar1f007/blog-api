@@ -1,4 +1,9 @@
-const { resizeAvatar, resizeCoverImage, uploadAvatar, uploadCoverImage } = require('./upload-file');
+const {
+  resizeAvatar,
+  resizeCoverImage,
+  uploadAvatar,
+  uploadCoverImage,
+} = require('./upload-file');
 const authenticateUser = require('./authenticate');
 const authorizePermission = require('./authorize-permission');
 const errorHandler = require('./errorHandler');

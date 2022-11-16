@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 
-const middleware = require('./middlewares');
+const middleware = require('./middleware');
 const { logger, connect } = require('./utils');
 
 const app = express();

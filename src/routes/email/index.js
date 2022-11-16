@@ -1,5 +1,5 @@
 const sendEmail = require('../../controllers/email');
-const middleware = require('../../middlewares');
+const middleware = require('../../middleware');
 const ValidationSchema = require('../../validations/email');
 
 const router = require('express').Router();
