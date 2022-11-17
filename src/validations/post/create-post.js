@@ -7,8 +7,6 @@ exports.CreatePostSchema = z.object({
   description: z.string().trim().min(15),
 
   category: z
-    .string()
-    .transform((val) => JSON.parse(val))
     .object({
       categoryId: IdSchema,
       newCategoryName: z.string(),
@@ -33,14 +31,12 @@ exports.CreatePostSchema = z.object({
     }),
 
   tags: z
-    .string()
-    .transform((val) => JSON.parse(val))
     .object({
       ids: IdSchema.array().superRefine((arr, ctx) => {
         if (arr.length !== new Set(arr).size) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `No duplicates allowed`,
+            message: `No duplicates(tag id) allowed`,
           });
         }
       }),

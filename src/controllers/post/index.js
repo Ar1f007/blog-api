@@ -17,12 +17,13 @@ const createPost = asyncWrapper(async (req, res) => {
 
   const authorId = req.user.userId;
 
-  const url = uploadCoverImage(req.file.filename);
+  const url = await uploadCoverImage(req.file.filename);
 
   const slugTitle = slugify(title);
 
   postData.authorId = authorId;
   postData.coverImage = url;
+
   postData.published_at = published_at;
   postData.title = title;
   postData.slug = slugTitle;
@@ -42,7 +43,11 @@ const createPost = asyncWrapper(async (req, res) => {
 
   if (tags.newTagNames) {
     const newTagIds = await getTagIds(tags.newTagNames);
-    postData.tags = [...postData.tags, ...newTagIds];
+    if (postData.tags) {
+      postData.tags = [...postData.tags, ...newTagIds];
+    } else {
+      postData.tags = newTagIds;
+    }
   }
 
   const post = await Post.create(postData);

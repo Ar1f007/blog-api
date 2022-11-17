@@ -1,11 +1,11 @@
-const { uploadToCloudinary } = require("../../utils")
+const { uploadToCloudinary } = require('../../utils');
 const { unlink } = require('fs/promises');
 
 exports.uploadCoverImage = async (filename) => {
-    const filePath = `public/img/users/${filename}`
-    const imgUrl = await uploadToCloudinary(filePath, 'posts');
+  const filePath = `public/img/posts/${filename}`;
+  const imgUrl = await uploadToCloudinary(filePath, 'posts');
 
-    await unlink(filePath);
+  await unlink(filePath);
 
-    return imgUrl;
-}
+  return imgUrl;
+};

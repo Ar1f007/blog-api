@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 const { Tag, Category } = require('../../models');
 const { AppError } = require('../../utils');
-const { create } = require('./find-or-create-doc');
+const { create } = require('./create-doc');
 
 /**
  * @param {string} tagName
