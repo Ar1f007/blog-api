@@ -6,6 +6,7 @@ const postSchema = new mongoose.Schema(
     slug: {
       type: String,
       unique: true,
+      index: true,
     },
 
     title: {

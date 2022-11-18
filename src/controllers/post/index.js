@@ -75,19 +75,20 @@ const getAllPosts = asyncWrapper(async (req, res) => {
 });
 
 /**
- * @desc Get the users own post
- * @route GET /api/posts
- * @access Private
+ * @desc Get single post details
+ * @route GET /api/posts/:slug
+ * @access Public
  */
-const getMyPosts = asyncWrapper(async (req, res) => {
-  const id = req.user.userId;
+const getPost = asyncWrapper(async (req, res) => {
+  const slug = req.params.slug;
 
-  const posts = await Post.find({ authorId: id }).lean().exec();
-  const postCount = await Post.estimatedDocumentCount({ authorId: id }).exec();
+  const post = await Post.find({ slug }).lean().exec();
 
-  res
-    .status(StatusCodes.OK)
-    .json({ success: true, posts, totalPosts: postCount });
+  if (!post) {
+    throw new AppError('No post found', StatusCodes.BAD_REQUEST);
+  }
+
+  res.status(StatusCodes.OK).json({ success: true, post });
 });
 
 /**
@@ -140,4 +141,4 @@ const toggleReact = asyncWrapper(async (req, res) => {
   return res.status(StatusCodes.OK).json({ success: true, post: updatedPost });
 });
 
-module.exports = { createPost, getAllPosts, getMyPosts, toggleReact };
+module.exports = { createPost, getAllPosts, toggleReact, getPost };

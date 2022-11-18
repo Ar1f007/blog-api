@@ -18,6 +18,7 @@ router
 
 router
   .route('/:slug')
+  .get(middleware.validate(SlugSchema, 'params'), post.getPost)
   .patch(
     middleware.validate(SlugSchema, 'params'),
     middleware.validate(PostValidation.ReactSchema, 'body'),
