@@ -4,6 +4,7 @@ const { asyncWrapper, slugify, AppError } = require('../../utils');
 const { getCategoryId, getTagIds } = require('./util');
 const { Post } = require('../../models');
 const { uploadCoverImage } = require('./upload-cover-image');
+const { ADMIN } = require('../../constants');
 
 /**
  * @desc Add a new post
@@ -92,6 +93,32 @@ const getPost = asyncWrapper(async (req, res) => {
 });
 
 /**
+ * @desc Delete post
+ * @route /api/posts
+ * @access Private
+ */
+const deletePost = asyncWrapper(async (req, res) => {
+  const { userId, role } = req.user;
+
+  const { slug } = req.params;
+
+  const post = await Post.find({ slug }).lean().select('authorId').exec();
+
+  if (role !== ADMIN && userId !== post.authorId) {
+    throw new AppError(
+      'You are not authorized to perform this task',
+      StatusCodes.UNAUTHORIZED
+    );
+  }
+
+  await Post.deleteOne({ slug });
+
+  res
+    .status(StatusCodes.OK)
+    .json({ success: true, message: 'Post deleted successfully' });
+});
+
+/**
  * @desc Like / Unlike post
  * @route PATCH /api/posts/:slug
  * @access Private
@@ -141,4 +168,4 @@ const toggleReact = asyncWrapper(async (req, res) => {
   return res.status(StatusCodes.OK).json({ success: true, post: updatedPost });
 });
 
-module.exports = { createPost, getAllPosts, toggleReact, getPost };
+module.exports = { createPost, getAllPosts, toggleReact, getPost, deletePost };

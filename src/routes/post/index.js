@@ -24,6 +24,11 @@ router
     middleware.validate(PostValidation.ReactSchema, 'body'),
     middleware.authenticateUser,
     post.toggleReact
+  )
+  .delete(
+    middleware.validate(SlugSchema, 'params'),
+    middleware.authenticateUser,
+    post.deletePost
   );
 
 module.exports = router;
