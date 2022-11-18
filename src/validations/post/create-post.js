@@ -1,5 +1,5 @@
 const { z } = require('zod');
-const { IdSchema } = require('../other');
+const { IdSchema } = require('../others');
 
 exports.CreatePostSchema = z.object({
   title: z.string().trim().min(5),

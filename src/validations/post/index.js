@@ -1,3 +1,4 @@
 const { CreatePostSchema } = require('./create-post');
+const { ReactSchema } = require('./toggle-react');
 
-module.exports = { CreatePostSchema };
+module.exports = { CreatePostSchema, ReactSchema };
