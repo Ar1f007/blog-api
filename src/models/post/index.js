@@ -6,7 +6,6 @@ const postSchema = new mongoose.Schema(
     slug: {
       type: String,
       unique: true,
-      index: true,
     },
 
     title: {
@@ -18,20 +17,12 @@ const postSchema = new mongoose.Schema(
 
     tags: [{ type: ObjectId, ref: 'Tag' }],
 
-    isLiked: {
-      type: Boolean,
-      default: false,
-    },
-
-    isDisliked: {
-      type: Boolean,
-      default: false,
-    },
-
     numViews: {
       type: Number,
       default: 0,
     },
+
+    isLiked: { type: Boolean, default: false },
 
     likes: [
       {
@@ -40,12 +31,7 @@ const postSchema = new mongoose.Schema(
       },
     ],
 
-    dislikes: [
-      {
-        type: ObjectId,
-        ref: 'User',
-      },
-    ],
+    likesCount: { type: Number, default: 0 },
 
     authorId: {
       type: ObjectId,

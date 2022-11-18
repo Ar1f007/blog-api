@@ -1,6 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 
-const { asyncWrapper, slugify } = require('../../utils');
+const { asyncWrapper, slugify, AppError } = require('../../utils');
 const { getCategoryId, getTagIds } = require('./util');
 const { Post } = require('../../models');
 const { uploadCoverImage } = require('./upload-cover-image');
@@ -55,4 +55,89 @@ const createPost = asyncWrapper(async (req, res) => {
   res.status(StatusCodes.CREATED).json({ success: true, post });
 });
 
-module.exports = { createPost };
+/**
+ * @desc Get the list of post which were already published (Date <= Current Time)
+ * @route GET /api/posts
+ * @access Public
+ */
+const getAllPosts = asyncWrapper(async (req, res) => {
+  const posts = await Post.find({ published_at: { $lte: Date.now() } })
+    .lean()
+    .exec();
+
+  const postCount = await Post.countDocuments({
+    published_at: { $lte: Date.now() },
+  }).exec();
+
+  res
+    .status(StatusCodes.OK)
+    .json({ success: true, posts, totalPosts: postCount });
+});
+
+/**
+ * @desc Get the users own post
+ * @route GET /api/posts
+ * @access Private
+ */
+const getMyPosts = asyncWrapper(async (req, res) => {
+  const id = req.user.userId;
+
+  const posts = await Post.find({ authorId: id }).lean().exec();
+  const postCount = await Post.estimatedDocumentCount({ authorId: id }).exec();
+
+  res
+    .status(StatusCodes.OK)
+    .json({ success: true, posts, totalPosts: postCount });
+});
+
+/**
+ * @desc Like / Unlike post
+ * @route PATCH /api/posts/:slug
+ * @access Private
+ */
+const toggleReact = asyncWrapper(async (req, res) => {
+  const { action, postId } = req.body;
+  const { userId } = req.user;
+
+  // find the post
+  const post = await Post.findById(postId)
+    .lean()
+    .select('likes likesCount isLiked')
+    .exec();
+
+  if (!post) {
+    throw new AppError('No post found', StatusCodes.NOT_FOUND);
+  }
+
+  // if the user has liked and has not liked before
+  if (action.isLiked && !post.isLiked) {
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      {
+        $inc: { likesCount: 1 },
+        $push: { likes: userId },
+        isLiked: true,
+      },
+      { new: true }
+    );
+
+    return res
+      .status(StatusCodes.OK)
+      .json({ success: true, post: updatedPost });
+  }
+
+  // user has liked before so pull the id out of the likes array and decrement likes count by 1
+  const updatedPost = await Post.findByIdAndUpdate(
+    postId,
+    {
+      $inc: { likesCount: -1 },
+      $pull: { likes: userId },
+      isLiked: false,
+    },
+    { new: true }
+  );
+
+  return res.status(StatusCodes.OK).json({ success: true, post: updatedPost });
+});
+
+module.exports = { createPost, getAllPosts, getMyPosts, toggleReact };

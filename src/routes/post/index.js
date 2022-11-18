@@ -12,6 +12,9 @@ router
     middleware.resizeCoverImage,
     middleware.validate(PostValidation.CreatePostSchema, 'body'),
     post.createPost
-  );
+  )
+  .get(post.getAllPosts);
+
+router.route('/:slug').patch(middleware.authenticateUser, post.toggleReact);
 
 module.exports = router;

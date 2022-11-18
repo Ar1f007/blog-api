@@ -2,6 +2,11 @@ const { z } = require('zod');
 const { nonEmptyFieldErrMsg } = require('../../utils');
 
 const SignupSchema = z.object({
+  username: z
+    .string(nonEmptyFieldErrMsg({ fieldName: 'username', type: 'text' }))
+    .trim()
+    .min(3, { message: 'Username should be at least 3 character(s)' }),
+
   firstName: z
     .string(nonEmptyFieldErrMsg({ fieldName: 'first name', type: 'text' }))
     .trim()
