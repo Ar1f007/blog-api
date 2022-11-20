@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongoose').Schema.Types;
+const crypto = require('crypto');
 
 const postSchema = new mongoose.Schema(
   {
@@ -61,6 +62,14 @@ const postSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+postSchema.pre('save', async function (next) {
+  const randomText = crypto.randomBytes(3).toString('hex');
+
+  this.slug = this.slug + randomText;
+
+  next();
+});
 
 const Post = mongoose.model('Post', postSchema);
 

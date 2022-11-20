@@ -16,7 +16,7 @@ const createPost = asyncWrapper(async (req, res) => {
 
   const { category, tags, title, published_at, description } = req.body;
 
-  const authorId = req.user.userId;
+  const authorId = '636940d88d8f937d074e1eb7' || req.user.userId;
 
   const url = await uploadCoverImage(req.file.filename);
 
