@@ -18,17 +18,13 @@ const createPost = asyncWrapper(async (req, res) => {
 
   const authorId = '636940d88d8f937d074e1eb7' || req.user.userId;
 
-  const url = await uploadCoverImage(req.file.filename);
-
   const slugTitle = slugify(title);
 
   postData.authorId = authorId;
-  postData.coverImage = url;
-
-  postData.published_at = published_at;
-  postData.title = title;
   postData.slug = slugTitle;
+  postData.title = title;
   postData.description = description;
+  postData.published_at = published_at;
 
   if (category.categoryId) {
     postData.category = category.categoryId;
@@ -51,8 +47,15 @@ const createPost = asyncWrapper(async (req, res) => {
     }
   }
 
-  const post = await Post.create(postData);
+  if (!req.params.create) {
+    const post = await Post.create(postData);
+    return res.status(StatusCodes.CREATED).json({ success: true, post });
+  }
 
+  const url = await uploadCoverImage(req.file.filename);
+  postData.coverImage = url;
+
+  const post = await Post.create(postData);
   res.status(StatusCodes.CREATED).json({ success: true, post });
 });
 
