@@ -16,7 +16,7 @@ const createPost = asyncWrapper(async (req, res) => {
 
   const { category, tags, title, published_at, description } = req.body;
 
-  const authorId = '636940d88d8f937d074e1eb7' || req.user.userId;
+  const authorId = req.user.userId;
 
   const slugTitle = slugify(title);
 
@@ -47,7 +47,7 @@ const createPost = asyncWrapper(async (req, res) => {
     }
   }
 
-  if (!req.params.create) {
+  if (req.params.create) {
     const post = await Post.create(postData);
     return res.status(StatusCodes.CREATED).json({ success: true, post });
   }
@@ -105,11 +105,15 @@ const deletePost = asyncWrapper(async (req, res) => {
 
   const { slug } = req.params;
 
-  const post = await Post.find({ slug }).lean().select('authorId').exec();
+  const post = await Post.findOne({ slug }).lean().select('authorId').exec();
 
-  if (role !== ADMIN && userId !== post.authorId) {
+  if (!post) {
+    throw new AppError('Post not found', StatusCodes.BAD_REQUEST);
+  }
+
+  if (role !== ADMIN && userId !== post.authorId.toString()) {
     throw new AppError(
-      'You are not authorized to perform this task',
+      'You can not delete this post',
       StatusCodes.UNAUTHORIZED
     );
   }

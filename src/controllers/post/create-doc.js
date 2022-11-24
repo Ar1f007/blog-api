@@ -14,9 +14,6 @@ exports.create = async (Model, name) => {
     const newDoc = await Model.create({ name, slug });
     return newDoc._id;
   } catch (error) {
-    throw new AppError(
-      'Tag/Category already exists',
-      StatusCodes.INTERNAL_SERVER_ERROR
-    );
+    throw new AppError('Tag/Category already exists', StatusCodes.CONFLICT);
   }
 };

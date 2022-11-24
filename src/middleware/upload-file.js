@@ -45,7 +45,8 @@ const resizeAvatar = async (req, res, next) => {
 const resizeCoverImage = async (req, res, next) => {
   if (!req.file) return next();
 
-  req.file.filename = `post-${req.user.userId}-${Date.now()}.webp`;
+  // req.file.filename = `post-${req.user.userId}-${Date.now()}.webp`;
+  req.file.filename = `post-${Date.now()}.webp`;
 
   await sharp(req.file.buffer)
     .resize({ width: 820, height: 320 })
