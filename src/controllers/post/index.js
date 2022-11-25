@@ -97,7 +97,7 @@ const getPost = asyncWrapper(async (req, res) => {
 
 /**
  * @desc Delete post
- * @route /api/posts
+ * @route /api/posts/:slug
  * @access Private
  */
 const deletePost = asyncWrapper(async (req, res) => {
