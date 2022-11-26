@@ -9,9 +9,8 @@ const commentSchema = new mongoose.Schema(
       index: true,
     },
     user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: [true, 'Post is required'],
+      type: Object,
+      required: [true, 'Commenter details (id, full name) is required'],
     },
     commentDesc: {
       type: String,

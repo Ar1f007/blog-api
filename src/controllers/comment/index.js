@@ -8,12 +8,17 @@ const { StatusCodes } = require('http-status-codes');
  * @access Private
  */
 const createComment = asyncWrapper(async (req, res) => {
-  const { userId } = req.user;
+  const { userId, fullName } = req.user;
   const { postId, content } = req.body;
+
+  const user = {
+    userId,
+    fullName,
+  };
 
   const comment = await Comment.create({
     post: postId,
-    user: userId,
+    user,
     commentDesc: content,
   });
 
