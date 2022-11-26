@@ -35,7 +35,9 @@ const createComment = asyncWrapper(async (req, res) => {
 const getAllComments = asyncWrapper(async (req, res) => {
   const { postId } = req.params;
 
-  const comments = await Comment.find({ post: postId }).exec();
+  const comments = await Comment.find({ post: postId })
+    .sort('-createdAt')
+    .exec();
   const totalComments = await Comment.countDocuments({ post: postId });
 
   res.status(StatusCodes.OK).json({ success: true, comments, totalComments });
