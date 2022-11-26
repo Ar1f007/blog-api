@@ -38,7 +38,7 @@ const createComment = asyncWrapper(async (req, res) => {
  * @access Public
  */
 const getAllComments = asyncWrapper(async (req, res) => {
-  const { postId } = req.params;
+  const { id: postId } = req.params;
 
   const comments = await Comment.find({ post: postId })
     .sort('-createdAt')
@@ -48,4 +48,30 @@ const getAllComments = asyncWrapper(async (req, res) => {
   res.status(StatusCodes.OK).json({ success: true, comments, totalComments });
 });
 
-module.exports = { createComment, getAllComments };
+/**
+ * @desc Edit a comment
+ * @route Patch /api/comments/update/:commentId
+ * @access Private
+ */
+const updateComment = asyncWrapper(async (req, res) => {
+  const { id: commentId } = req.params;
+  const { content } = req.body;
+
+  const comment = await Comment.findByIdAndUpdate(
+    commentId,
+    {
+      commentDesc: content,
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!comment) {
+    throw new AppError('No comment found', StatusCodes.BAD_REQUEST);
+  }
+
+  res.status(StatusCodes.OK).json({ success: true, comment });
+});
+
+module.exports = { createComment, getAllComments, updateComment };

@@ -4,7 +4,8 @@ const comment = require('../../controllers/comment');
 
 const {
   CreateCommentSchema,
-  PostIdSchema,
+  ParamIdSchema,
+  CommentContentSchema,
 } = require('../../validations/comment');
 
 router
@@ -16,7 +17,16 @@ router
   );
 
 router
-  .route('/:postId')
-  .get(middleware.validate(PostIdSchema, 'params'), comment.getAllComments);
+  .route('/update/:id')
+  .patch(
+    middleware.authenticateUser,
+    middleware.validate(ParamIdSchema, 'params'),
+    middleware.validate(CommentContentSchema, 'body'),
+    comment.updateComment
+  );
+
+router
+  .route('/:id')
+  .get(middleware.validate(ParamIdSchema, 'params'), comment.getAllComments);
 
 module.exports = router;
