@@ -19,6 +19,9 @@ app.use('/api/users', require('./routes/user'));
 // post route
 app.use('/api/posts', require('./routes/post'));
 
+// comment route
+app.use('/api/comments', require('./routes/comment'));
+
 // email route
 app.use('/api/email', require('./routes/email'));
 
