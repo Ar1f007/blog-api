@@ -65,7 +65,7 @@ const updateComment = asyncWrapper(async (req, res) => {
     {
       new: true,
     }
-  );
+  ).exec();
 
   if (!comment) {
     throw new AppError('No comment found', StatusCodes.BAD_REQUEST);
@@ -77,7 +77,7 @@ const updateComment = asyncWrapper(async (req, res) => {
 const deleteComment = asyncWrapper(async (req, res) => {
   const { id: commentId } = req.params;
 
-  const comment = await Comment.findByIdAndDelete(commentId);
+  const comment = await Comment.findByIdAndDelete(commentId).exec();
 
   if (!comment) {
     throw new AppError('No comment found', StatusCodes.BAD_REQUEST);
