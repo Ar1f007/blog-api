@@ -28,6 +28,10 @@ router
 router
   .route('/:id')
   .get(middleware.validate(ParamIdSchema, 'params'), comment.getAllComments)
-  .delete(middleware.validate(ParamIdSchema, 'params'), comment.deleteComment);
+  .delete(
+    middleware.authenticateUser,
+    middleware.validate(ParamIdSchema, 'params'),
+    comment.deleteComment
+  );
 
 module.exports = router;

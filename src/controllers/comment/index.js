@@ -1,6 +1,7 @@
 const { asyncWrapper, AppError } = require('../../utils');
 const Comment = require('../../models/comment');
 const { StatusCodes } = require('http-status-codes');
+const { ADMIN } = require('../../constants');
 
 /**
  * @desc Add a comment
@@ -74,16 +75,39 @@ const updateComment = asyncWrapper(async (req, res) => {
   res.status(StatusCodes.OK).json({ success: true, comment });
 });
 
+/**
+ * @desc Delete a comment
+ * @route DELETE /api/comments/:commentId
+ * @access Private
+ */
 const deleteComment = asyncWrapper(async (req, res) => {
   const { id: commentId } = req.params;
+  const { role, userId } = req.user;
 
-  const comment = await Comment.findByIdAndDelete(commentId).exec();
+  const comment = await Comment.findById(commentId)
+    .lean()
+    .select('user')
+    .exec();
 
   if (!comment) {
     throw new AppError('No comment found', StatusCodes.BAD_REQUEST);
   }
 
-  res.status(StatusCodes.OK).json({ success: true, comment });
+  const idMatch = comment.user.userId.toString() === userId;
+  const isAdmin = role === ADMIN;
+
+  if (!isAdmin && !idMatch) {
+    throw new AppError(
+      "You can not delete other's comment",
+      StatusCodes.UNAUTHORIZED
+    );
+  }
+
+  await Comment.findByIdAndDelete(commentId).exec();
+
+  res
+    .status(StatusCodes.OK)
+    .json({ success: true, message: 'Comment deleted successfully!' });
 });
 
 module.exports = {
@@ -92,3 +116,5 @@ module.exports = {
   getAllComments,
   updateComment,
 };
+
+
