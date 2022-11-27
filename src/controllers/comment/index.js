@@ -74,4 +74,21 @@ const updateComment = asyncWrapper(async (req, res) => {
   res.status(StatusCodes.OK).json({ success: true, comment });
 });
 
-module.exports = { createComment, getAllComments, updateComment };
+const deleteComment = asyncWrapper(async (req, res) => {
+  const { id: commentId } = req.params;
+
+  const comment = await Comment.findByIdAndDelete(commentId);
+
+  if (!comment) {
+    throw new AppError('No comment found', StatusCodes.BAD_REQUEST);
+  }
+
+  res.status(StatusCodes.OK).json({ success: true, comment });
+});
+
+module.exports = {
+  createComment,
+  deleteComment,
+  getAllComments,
+  updateComment,
+};
