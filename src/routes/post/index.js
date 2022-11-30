@@ -17,6 +17,14 @@ router
   .get(post.getAllPosts);
 
 router
+  .route('/reactions')
+  .post(
+    middleware.validate(PostValidation.ReactionSchema, 'body'),
+    middleware.authenticateUser,
+    post.toggleReact
+  );
+
+router
   .route('/:slug')
   .post(
     middleware.validate(SlugSchema, 'params'),
@@ -24,12 +32,6 @@ router
     post.createPost
   )
   .get(middleware.validate(SlugSchema, 'params'), post.getPost)
-  .patch(
-    middleware.validate(SlugSchema, 'params'),
-    middleware.validate(PostValidation.ReactSchema, 'body'),
-    middleware.authenticateUser,
-    post.toggleReact
-  )
   .delete(
     middleware.validate(SlugSchema, 'params'),
     middleware.authenticateUser,

@@ -5,6 +5,7 @@ const { getCategoryId, getTagIds } = require('./util');
 const { Post } = require('../../models');
 const { uploadCoverImage } = require('./upload-cover-image');
 const { ADMIN } = require('../../constants');
+// const Reaction = require('../../models/reaction');
 
 /**
  * @desc Add a new post
@@ -125,54 +126,4 @@ const deletePost = asyncWrapper(async (req, res) => {
     .json({ success: true, message: 'Post deleted successfully' });
 });
 
-/**
- * @desc Like / Unlike post
- * @route PATCH /api/posts/:slug
- * @access Private
- */
-const toggleReact = asyncWrapper(async (req, res) => {
-  const { action, postId } = req.body;
-  const { userId } = req.user;
-
-  // find the post
-  const post = await Post.findById(postId)
-    .lean()
-    .select('likes likesCount isLiked')
-    .exec();
-
-  if (!post) {
-    throw new AppError('No post found', StatusCodes.NOT_FOUND);
-  }
-
-  // if the user has liked and has not liked before
-  if (action.isLiked && !post.isLiked) {
-    const updatedPost = await Post.findByIdAndUpdate(
-      postId,
-      {
-        $inc: { likesCount: 1 },
-        $push: { likes: userId },
-        isLiked: true,
-      },
-      { new: true }
-    );
-
-    return res
-      .status(StatusCodes.OK)
-      .json({ success: true, post: updatedPost });
-  }
-
-  // user has liked before so pull the id out of the likes array and decrement likes count by 1
-  const updatedPost = await Post.findByIdAndUpdate(
-    postId,
-    {
-      $inc: { likesCount: -1 },
-      $pull: { likes: userId },
-      isLiked: false,
-    },
-    { new: true }
-  );
-
-  return res.status(StatusCodes.OK).json({ success: true, post: updatedPost });
-});
-
-module.exports = { createPost, getAllPosts, toggleReact, getPost, deletePost };
+module.exports = { createPost, getAllPosts, getPost, deletePost };
