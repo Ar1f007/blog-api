@@ -5,7 +5,7 @@ const { getCategoryId, getTagIds } = require('./util');
 const { Post } = require('../../models');
 const { uploadCoverImage } = require('./upload-cover-image');
 const { ADMIN } = require('../../constants');
-// const Reaction = require('../../models/reaction');
+const Reaction = require('../../models/reaction');
 
 /**
  * @desc Add a new post
@@ -126,4 +126,76 @@ const deletePost = asyncWrapper(async (req, res) => {
     .json({ success: true, message: 'Post deleted successfully' });
 });
 
-module.exports = { createPost, getAllPosts, getPost, deletePost };
+/**
+ * @desc Like / Unlike post
+ * @route PATCH /api/posts/:slug/reaction
+ * @access Private
+ */
+const toggleReact = asyncWrapper(async (req, res) => {
+  // 1. Check if the userId and logged in user is the same, if not throw error
+  // 2. Condition
+  //    i. If there is a document already exists in reaction table
+  // - update the 'isLiked' field
+  // - inc or dec 'likesCount' of the post according to { isLiked: true / false }
+  //    ii. No document found with the user id and post id
+  // - create one
+  // - update the 'isLiked' field to true
+  // - inc 'likesCount' by 1
+
+  const { userId, postId, isLiked } = req.body;
+
+  if (userId !== req.user.userId) {
+    throw new AppError('Unauthorized', StatusCodes.UNAUTHORIZED);
+  }
+
+  // check if user has already liked it
+  const docFound = await Reaction.findOne({ userId, postId }).lean().exec();
+
+  // if it does not exist then create new doc
+  if (!docFound) {
+    const doc = await Reaction.create({ ...req.body, isLiked: true });
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      {
+        $inc: { likesCount: 1 },
+      },
+      { new: true }
+    );
+
+    return res
+      .status(StatusCodes.CREATED)
+      .json({ success: true, reactionCount: post.likesCount, doc });
+  }
+
+  let post;
+
+  // inc or decrement dependent upon isLiked value
+  let options = {
+    $inc: { likesCount: isLiked ? 1 : -1 },
+  };
+
+  // document is created but now in case of user liked / disliked update the isLiked field
+  const doc = await Reaction.findByIdAndUpdate(
+    docFound._id,
+    { isLiked },
+    { new: true }
+  );
+
+  // if liked then update likesCount field - increment by one
+  if (isLiked) {
+    post = await Post.findByIdAndUpdate(postId, options, { new: true });
+
+    return res
+      .status(StatusCodes.OK)
+      .json({ success: true, reactionCount: post.likesCount, doc });
+  }
+
+  // since disliked then update likesCount field - decrement by one
+  post = await Post.findByIdAndUpdate(postId, options, { new: true });
+
+  res
+    .status(StatusCodes.OK)
+    .json({ success: true, reactionCount: post.likesCount, doc });
+});
+
+module.exports = { createPost, getAllPosts, toggleReact, getPost, deletePost };
