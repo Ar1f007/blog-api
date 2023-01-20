@@ -21,10 +21,18 @@ const { ADMIN } = require('../../constants');
  */
 const signup = asyncWrapper(async (req, res) => {
   // check if user already exist with the same email
-  const userExists = await User.findOne({ email: req.body.email });
+  const { email, username } = req.body;
+  const userExists = await User.findOne({ email });
 
   if (userExists) {
     throw new AppError('Email already exists', StatusCodes.FORBIDDEN);
+  }
+
+  // or username
+  const usernameTaken = await User.findOne({ username });
+
+  if (usernameTaken) {
+    throw new AppError('Username is taken', StatusCodes.CONFLICT);
   }
 
   const user = await User.create(req.body);

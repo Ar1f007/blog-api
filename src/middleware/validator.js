@@ -19,7 +19,7 @@ module.exports = (Schema, property) => (req, res, next) => {
     }
 
     const errors = error.errors.map((issue) => ({
-      fieldName: issue.path,
+      fieldName: issue.path[0],
       message: issue.message,
     }));
 
