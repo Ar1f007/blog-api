@@ -17,7 +17,7 @@ exports.CreatePostSchema = z.object({
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
-            'One of either category id or a new category name must be given',
+            'One of either existed category id or a new category name must be given',
         });
       }
 

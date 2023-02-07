@@ -32,7 +32,7 @@ const signup = asyncWrapper(async (req, res) => {
   const usernameTaken = await User.findOne({ username });
 
   if (usernameTaken) {
-    throw new AppError('Username is taken', StatusCodes.CONFLICT);
+    throw new AppError('The username is taken', StatusCodes.CONFLICT);
   }
 
   const user = await User.create(req.body);
@@ -71,9 +71,11 @@ const signup = asyncWrapper(async (req, res) => {
  * @access Public
  */
 const login = asyncWrapper(async (req, res) => {
-  const user = await User.findOne({ email: req.body.email }).select(
-    '+password'
-  );
+  const emailOrUsername = req.body.emailOrUsername;
+
+  const user = await User.findOne({
+    $or: [{ username: emailOrUsername }, { email: emailOrUsername }],
+  }).select('+password');
 
   if (!user) {
     throw new AppError('Invalid credentials', StatusCodes.UNAUTHORIZED);
@@ -90,6 +92,7 @@ const login = asyncWrapper(async (req, res) => {
 
   const data = {
     id: user.id,
+    username: user.username,
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,

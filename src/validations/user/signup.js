@@ -17,7 +17,10 @@ const SignupSchema = z.object({
     .trim()
     .min(1, { message: 'Last name is required' }),
 
-  email: z.string().trim().email({ message: 'Invalid email address' }),
+  email: z
+    .string(nonEmptyFieldErrMsg({ fieldName: 'email', type: 'text' }))
+    .trim()
+    .email({ message: 'Invalid email address' }),
 
   password: z
     .string(nonEmptyFieldErrMsg({ fieldName: 'password', type: 'string' }))

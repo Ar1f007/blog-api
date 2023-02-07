@@ -2,7 +2,10 @@ const { z } = require('zod');
 const { nonEmptyFieldErrMsg } = require('../../utils');
 
 const LoginSchema = z.object({
-  email: z.string().trim().email({ message: 'Invalid email address' }),
+  emailOrUsername: z
+    .string()
+    .trim()
+    .min(1, { message: 'Email or username is required' }),
 
   password: z
     .string(nonEmptyFieldErrMsg({ fieldName: 'password', type: 'string' }))

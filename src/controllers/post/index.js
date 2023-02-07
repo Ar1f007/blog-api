@@ -48,11 +48,13 @@ const createPost = asyncWrapper(async (req, res) => {
     }
   }
 
-  if (req.params.create) {
+  // !create - indicating a payload without coverImage
+  if (!req.params.create) {
     const post = await Post.create(postData);
     return res.status(StatusCodes.CREATED).json({ success: true, post });
   }
 
+  // Payload includes cover image
   const url = await uploadCoverImage(req.file.filename);
   postData.coverImage = url;
 
