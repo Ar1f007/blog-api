@@ -29,7 +29,6 @@ const uploadAvatar = uploadFiles.single('avatar');
 const uploadCoverImage = uploadFiles.single('coverImage');
 
 const resizeAvatar = async (req, res, next) => {
-  console.log(req.file);
   if (!req.file) return next();
 
   req.file.filename = `user-${req.user.userId}-${Date.now()}.webp`;
