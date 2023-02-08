@@ -27,12 +27,14 @@ router
 router
   .route('/:slug')
   .post(
+    middleware.authenticateUser,
     middleware.validate(SlugSchema, 'params'),
     middleware.validate(PostValidation.CreatePostSchema, 'body'),
     post.createPost
   )
   .get(middleware.validate(SlugSchema, 'params'), post.getPost)
   .delete(
+    middleware.authenticateUser,
     middleware.validate(SlugSchema, 'params'),
     middleware.authenticateUser,
     post.deletePost
