@@ -15,6 +15,12 @@ const categorySchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (_, converted) => {
+        delete converted._id;
+      },
+    },
   }
 );
 

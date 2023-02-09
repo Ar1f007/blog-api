@@ -7,7 +7,12 @@ exports.CreatePostSchema = z.object({
   description: z.string().trim().min(15),
 
   category: z.preprocess(
-    (val) => JSON.parse(val),
+    (val) => {
+      if (typeof val === 'string') {
+        return JSON.parse(val);
+      }
+      return val;
+    },
     z
       .object({
         categoryId: IdSchema,
@@ -33,7 +38,12 @@ exports.CreatePostSchema = z.object({
       })
   ),
   tags: z.preprocess(
-    (val) => JSON.parse(val),
+    (val) => {
+      if (typeof val === 'string') {
+        return JSON.parse(val);
+      }
+      return val;
+    },
     z
       .object({
         ids: IdSchema.array().superRefine((arr, ctx) => {

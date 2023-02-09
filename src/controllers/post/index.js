@@ -49,7 +49,7 @@ const createPost = asyncWrapper(async (req, res) => {
   }
 
   // create - indicating a payload without coverImage
-  if (req.params.create) {
+  if (req.params.slug === 'create') {
     const post = await Post.create(postData);
     return res.status(StatusCodes.CREATED).json({ success: true, post });
   }

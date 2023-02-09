@@ -10,7 +10,7 @@ const { StatusCodes } = require('http-status-codes');
 const getAllCategories = asyncWrapper(async (req, res) => {
   const categories = await Category.find()
     .sort('-createdAt')
-    .select('-createdAt')
+    .select({ name: 1, slug: 1, id: 1 })
     .exec();
 
   // const c = await Category.aggregate([
