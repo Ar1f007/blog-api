@@ -27,6 +27,9 @@ app.use('/api/posts', require('./routes/post'));
 // category route
 app.use('/api/categories', require('./routes/category'));
 
+// tag routes
+app.use('/api/tags', require('./routes/tag'));
+
 // comment route
 app.use('/api/comments', require('./routes/comment'));
 
