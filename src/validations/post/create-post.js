@@ -2,9 +2,9 @@ const { z } = require('zod');
 const { IdSchema } = require('../others');
 
 exports.CreatePostSchema = z.object({
-  title: z.string().trim().min(5),
+  title: z.string().trim().min(1, { message: 'Title is required' }),
 
-  description: z.string().trim().min(15),
+  description: z.string().trim().min(1, { message: 'Content is required' }),
 
   category: z.preprocess(
     (val) => {
