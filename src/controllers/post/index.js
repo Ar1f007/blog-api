@@ -68,13 +68,32 @@ const createPost = asyncWrapper(async (req, res) => {
  * @access Public
  */
 const getAllPosts = asyncWrapper(async (req, res) => {
-  const posts = await Post.find({ published_at: { $lte: Date.now() } })
+  const query = { published_at: { $lte: Date.now() } };
+
+  const populateFields = [
+    {
+      path: 'authorId',
+      select: 'firstName lastName photo',
+    },
+    {
+      path: 'category',
+      select: 'id name slug',
+    },
+    {
+      path: 'tags',
+      select: 'name slug',
+    },
+  ];
+
+  const byLatestFirst = { createdAt: -1 };
+
+  const posts = await Post.find(query)
+    .populate(populateFields)
+    .sort(byLatestFirst)
     .lean()
     .exec();
 
-  const postCount = await Post.countDocuments({
-    published_at: { $lte: Date.now() },
-  }).exec();
+  const postCount = await Post.countDocuments(query).exec();
 
   res
     .status(StatusCodes.OK)
