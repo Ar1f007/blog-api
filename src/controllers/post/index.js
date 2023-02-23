@@ -72,7 +72,7 @@ const getAllPosts = asyncWrapper(async (req, res) => {
 
   const populateFields = [
     {
-      path: 'authorId',
+      path: 'author',
       select: 'firstName lastName photo',
     },
     {

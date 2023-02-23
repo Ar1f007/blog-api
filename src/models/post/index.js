@@ -35,7 +35,7 @@ const postSchema = new mongoose.Schema(
 
     likesCount: { type: Number, default: 0 },
 
-    authorId: {
+    author: {
       type: ObjectId,
       ref: 'User',
       required: [true, 'Author is required'],
