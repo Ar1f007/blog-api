@@ -14,7 +14,10 @@ router
     middleware.validate(PostValidation.CreatePostSchema, 'body'),
     post.createPost
   )
-  .get(post.getAllPosts);
+  .get(
+    middleware.validate(PostValidation.PaginationSchema, 'query'),
+    post.getAllPosts
+  );
 
 router
   .route('/reactions')

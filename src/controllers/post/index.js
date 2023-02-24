@@ -68,6 +68,8 @@ const createPost = asyncWrapper(async (req, res) => {
  * @access Public
  */
 const getAllPosts = asyncWrapper(async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+
   const query = { published_at: { $lte: Date.now() } };
 
   const populateFields = [
@@ -87,17 +89,38 @@ const getAllPosts = asyncWrapper(async (req, res) => {
 
   const byLatestFirst = { createdAt: -1 };
 
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
   const posts = await Post.find(query)
     .populate(populateFields)
     .sort(byLatestFirst)
+    .skip(startIndex)
+    .limit(limit)
     .lean()
     .exec();
 
   const postCount = await Post.countDocuments(query).exec();
 
+  let pagination = {};
+
+  if (endIndex < postCount) {
+    pagination.next = {
+      page: page + 1,
+      limit,
+    };
+  }
+
+  if (startIndex > 0) {
+    pagination.prev = {
+      page: page - 1,
+      limit,
+    };
+  }
+
   res
     .status(StatusCodes.OK)
-    .json({ success: true, posts, totalPosts: postCount });
+    .json({ success: true, posts, totalPosts: postCount, pagination });
 });
 
 /**
