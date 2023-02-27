@@ -1,4 +1,4 @@
-const { asyncWrapper } = require('../../utils');
+const { asyncWrapper, AppError } = require('../../utils');
 const Category = require('../../models/category');
 const { StatusCodes } = require('http-status-codes');
 
@@ -40,6 +40,28 @@ const getAllCategories = asyncWrapper(async (req, res) => {
   res.status(StatusCodes.OK).json({ success: true, categories });
 });
 
+/**
+ * @desc Delete a category
+ * @routes GET /api/categories/:id
+ * @access Private
+ */
+const deleteCategory = asyncWrapper(async (req, res) => {
+  const id = req.params;
+
+  const category = await Category.findByIdAndDelete(id);
+
+  if (!category) {
+    throw new AppError('Category does not exist', StatusCodes.NOT_FOUND);
+  }
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    category,
+    message: 'Category deleted successfully',
+  });
+});
+
 module.exports = {
   getAllCategories,
+  deleteCategory,
 };
