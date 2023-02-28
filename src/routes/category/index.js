@@ -7,6 +7,10 @@ router.route('/').get(category.getAllCategories);
 
 router
   .route('/:id')
-  .delete(middleware.authorizePermission(ADMIN), category.deleteCategory);
+  .delete(
+    middleware.authenticateUser,
+    middleware.authorizePermission(ADMIN),
+    category.deleteCategory
+  );
 
 module.exports = router;

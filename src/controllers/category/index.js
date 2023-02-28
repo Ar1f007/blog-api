@@ -46,7 +46,7 @@ const getAllCategories = asyncWrapper(async (req, res) => {
  * @access Private
  */
 const deleteCategory = asyncWrapper(async (req, res) => {
-  const id = req.params;
+  const { id } = req.params;
 
   const category = await Category.findByIdAndDelete(id);
 
