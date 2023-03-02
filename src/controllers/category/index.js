@@ -1,6 +1,7 @@
 const { asyncWrapper, AppError } = require('../../utils');
 const Category = require('../../models/category');
 const { StatusCodes } = require('http-status-codes');
+const { default: slugify } = require('slugify');
 
 /**
  * @desc Get all categories
@@ -41,8 +42,32 @@ const getAllCategories = asyncWrapper(async (req, res) => {
 });
 
 /**
+ * @desc Update a category
+ * @routes PUT /api/categories/:id
+ * @access Private
+ */
+const updateCategory = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  const slug = slugify(name);
+
+  const category = await Category.findByIdAndUpdate(
+    id,
+    { name, slug },
+    { new: true }
+  );
+
+  if (!category) {
+    throw new AppError('Category does not exist', StatusCodes.NOT_FOUND);
+  }
+
+  res.status(StatusCodes.OK).json({ success: true, category: category });
+});
+
+/**
  * @desc Delete a category
- * @routes GET /api/categories/:id
+ * @routes DELETE /api/categories/:id
  * @access Private
  */
 const deleteCategory = asyncWrapper(async (req, res) => {
@@ -63,5 +88,6 @@ const deleteCategory = asyncWrapper(async (req, res) => {
 
 module.exports = {
   getAllCategories,
+  updateCategory,
   deleteCategory,
 };
