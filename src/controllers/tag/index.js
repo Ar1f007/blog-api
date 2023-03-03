@@ -1,4 +1,4 @@
-const { asyncWrapper } = require('../../utils');
+const { asyncWrapper, AppError, slugify } = require('../../utils');
 const { StatusCodes } = require('http-status-codes');
 const Tag = require('../../models/tag');
 
@@ -17,6 +17,27 @@ const getAllTags = asyncWrapper(async (req, res) => {
   res.status(StatusCodes.OK).json({ success: true, tags });
 });
 
+/**
+ * @desc Update a tag
+ * @routes PUT /api/tags/:id
+ * @access Private
+ */
+const updateTag = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  const slug = slugify(name);
+
+  const tag = await Tag.findByIdAndUpdate(id, { name, slug }, { new: true });
+
+  if (!tag) {
+    throw new AppError('Category does not exist', StatusCodes.NOT_FOUND);
+  }
+
+  res.status(StatusCodes.OK).json({ success: true, tag: tag });
+});
+
 module.exports = {
   getAllTags,
+  updateTag,
 };
