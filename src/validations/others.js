@@ -8,3 +8,7 @@ exports.IdSchema = z
 exports.SlugSchema = z.object({
   slug: z.string(),
 });
+
+exports.NameSchema = z.object({
+  name: z.string(),
+});
