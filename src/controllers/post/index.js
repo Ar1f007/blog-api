@@ -21,7 +21,7 @@ const createPost = asyncWrapper(async (req, res) => {
 
   const slugTitle = slugify(title);
 
-  postData.authorId = authorId;
+  postData.author = authorId;
   postData.slug = slugTitle;
   postData.title = title;
   postData.description = description;
@@ -131,7 +131,25 @@ const getAllPosts = asyncWrapper(async (req, res) => {
 const getPost = asyncWrapper(async (req, res) => {
   const slug = req.params.slug;
 
-  const post = await Post.find({ slug }).lean().exec();
+  const populateFields = [
+    {
+      path: 'author',
+      select: 'firstName lastName photo email followers bio',
+    },
+    {
+      path: 'category',
+      select: 'id name slug',
+    },
+    {
+      path: 'tags',
+      select: 'name slug',
+    },
+  ];
+
+  const post = await Post.findOne({ slug })
+    .populate(populateFields)
+    .lean()
+    .exec();
 
   if (!post) {
     throw new AppError('No post found', StatusCodes.BAD_REQUEST);
