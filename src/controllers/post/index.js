@@ -134,7 +134,8 @@ const getPost = asyncWrapper(async (req, res) => {
   const populateFields = [
     {
       path: 'author',
-      select: 'firstName lastName photo email followers bio',
+      select:
+        'firstName lastName username photo email followers bio address createdAt',
     },
     {
       path: 'category',
@@ -155,7 +156,36 @@ const getPost = asyncWrapper(async (req, res) => {
     throw new AppError('No post found', StatusCodes.BAD_REQUEST);
   }
 
-  res.status(StatusCodes.OK).json({ success: true, post });
+  const data = {
+    post: {
+      id: post._id,
+      slug: post.slug,
+      coverImage: post.coverImage,
+      title: post.title,
+      description: post.description,
+      views: post.numViews,
+      isLiked: post.isLiked,
+      likesCount: post.likesCount,
+      likes: post.likes,
+      published_at: post.published_at,
+      category: post.category,
+      tags: post.tags,
+    },
+    author: {
+      id: post.author._id,
+      username: post.author.username,
+      firstName: post.author.firstName || '',
+      lastName: post.author.lastName || '',
+      fullName: `${post.author.firstName || ''} ${post.author.lastName || ''}`,
+      photo: post.author.photo,
+      email: post.author.email,
+      followers: post.author.followers.length,
+      joined: post.author.createdAt,
+      address: post.author.address || '',
+    },
+  };
+
+  res.status(StatusCodes.OK).json({ success: true, data });
 });
 
 /**
