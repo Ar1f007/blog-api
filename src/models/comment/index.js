@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const commentSchema = new mongoose.Schema(
   {
-    post: {
+    postId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Post',
       required: [true, 'Post is required'],
@@ -10,7 +10,7 @@ const commentSchema = new mongoose.Schema(
     },
     user: {
       type: Object,
-      required: [true, 'Commenter details (id, full name) is required'],
+      required: [true, 'Commenter details is required'],
     },
     commentDesc: {
       type: String,

@@ -8,13 +8,16 @@ const threeDays = 1000 * 60 * 60 * 24 * 3;
  * @param {String} jwtToken jwt token
  */
 const attachCookiesToResponse = (res, user) => {
-  const { firstName, lastName, email, id, role } = user;
+  const { firstName, lastName, email, id, role, username, photo, bio } = user;
 
   const token = createToken({
     fullName: firstName + ' ' + lastName,
     email,
     userId: id,
     role,
+    username,
+    photo,
+    bio: bio ?? '',
   });
 
   res.cookie('token', token, {

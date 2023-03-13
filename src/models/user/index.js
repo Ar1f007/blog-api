@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
       minLength: 5,
       select: false,
     },
-    bio: { type: String },
+    bio: { type: String, default: '' },
     postCount: { type: Number, default: 0 },
     isBlocked: { type: Boolean, default: false },
 

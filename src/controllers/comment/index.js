@@ -9,17 +9,21 @@ const { ADMIN } = require('../../constants');
  * @access Private
  */
 const createComment = asyncWrapper(async (req, res) => {
-  const { userId, fullName } = req.user;
+  const user = req?.user;
   const { postId, content } = req.body;
 
-  const user = {
-    userId,
-    fullName,
+  const userInfo = {
+    userId: user.userId,
+    username: user.username,
+    fullName: user.fullName,
+    email: user.email,
+    bio: user.bio,
+    photo: user.photo,
   };
 
   const comment = await Comment.create({
-    post: postId,
-    user,
+    postId: postId,
+    user: userInfo,
     commentDesc: content,
   });
 
@@ -41,11 +45,12 @@ const createComment = asyncWrapper(async (req, res) => {
 const getAllComments = asyncWrapper(async (req, res) => {
   const { id: postId } = req.params;
 
-  const comments = await Comment.find({ post: postId })
+  const comments = await Comment.find({ postId })
     .sort('-createdAt')
+    .lean()
     .exec();
-  const totalComments = await Comment.countDocuments({ post: postId });
 
+  const totalComments = await Comment.countDocuments({ postId });
   res.status(StatusCodes.OK).json({ success: true, comments, totalComments });
 });
 

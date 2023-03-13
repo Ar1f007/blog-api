@@ -53,11 +53,14 @@ const signup = asyncWrapper(async (req, res) => {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
+    fullName: user.firstName + ' ' + user.lastName,
     email: user.email,
     role: user.role,
+    username: user.username,
+    photo: user.photo,
   };
 
-  attachCookiesToResponse(res, user);
+  attachCookiesToResponse(res, data);
 
   res.status(StatusCodes.CREATED).json({
     success: true,
@@ -100,6 +103,8 @@ const login = asyncWrapper(async (req, res) => {
     isBlocked: user.isBlocked,
     isAdmin: user.isAdmin,
     role: user.role,
+    bio: user.bio,
+    fullName: user.firstName + ' ' + user.lastName,
   };
 
   attachCookiesToResponse(res, data);
