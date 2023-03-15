@@ -39,7 +39,7 @@ const createComment = asyncWrapper(async (req, res) => {
 
 /**
  * @desc Get all comments of a particular post
- * @routes GET /api/comments/:postId
+ * @routes GET /api/comments/post/:id
  * @access Public
  */
 const getAllComments = asyncWrapper(async (req, res) => {

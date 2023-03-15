@@ -27,11 +27,15 @@ router
 
 router
   .route('/:id')
-  .get(middleware.validate(ParamIdSchema, 'params'), comment.getAllComments)
+  .get(middleware.validate(ParamIdSchema, 'params'), comment.getSingleComment)
   .delete(
     middleware.authenticateUser,
     middleware.validate(ParamIdSchema, 'params'),
     comment.deleteComment
   );
+
+router
+  .route('/post/:id')
+  .get(middleware.validate(ParamIdSchema, 'params'), comment.getAllComments);
 
 module.exports = router;
