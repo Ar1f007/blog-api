@@ -55,6 +55,26 @@ const getAllComments = asyncWrapper(async (req, res) => {
 });
 
 /**
+ * @desc Get single comment by comment ID
+ * @routes GET /api/comments/:id
+ * @access Public
+ */
+const getSingleComment = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+
+  const comment = await Comment.findById(id).lean().exec();
+
+  if (!comment) {
+    throw new AppError('Comment not found', StatusCodes.BAD_REQUEST);
+  }
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    comment,
+  });
+});
+
+/**
  * @desc Edit a comment
  * @route Patch /api/comments/update/:commentId
  * @access Private
@@ -119,6 +139,7 @@ module.exports = {
   createComment,
   deleteComment,
   getAllComments,
+  getSingleComment,
   updateComment,
 };
 
