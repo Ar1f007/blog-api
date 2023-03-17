@@ -10,7 +10,7 @@ const { ADMIN } = require('../../constants');
  */
 const createComment = asyncWrapper(async (req, res) => {
   const user = req?.user;
-  const { postId, content } = req.body;
+  const { postId, content, postSlug } = req.body;
 
   const userInfo = {
     userId: user.userId,
@@ -22,7 +22,8 @@ const createComment = asyncWrapper(async (req, res) => {
   };
 
   const comment = await Comment.create({
-    postId: postId,
+    postSlug,
+    postId,
     user: userInfo,
     commentDesc: content,
   });

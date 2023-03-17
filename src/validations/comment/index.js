@@ -2,6 +2,7 @@ const { z } = require('zod');
 const { IdSchema } = require('../others');
 
 exports.CreateCommentSchema = z.object({
+  postSlug: z.string(),
   postId: IdSchema,
   content: z.string().min(1),
 });

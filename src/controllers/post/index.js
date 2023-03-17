@@ -148,20 +148,25 @@ const getPost = asyncWrapper(async (req, res) => {
     },
   ];
 
-  const post = await Post.findOne({ slug })
+  const postPromise = Post.findOne({ slug })
     .populate(populateFields)
     .lean()
     .exec();
 
+  const query = {
+    postSlug: slug,
+  };
+
+  const totalCommentsPromise = Comment.countDocuments(query).exec();
+
+  const [post, totalComments] = await Promise.all([
+    postPromise,
+    totalCommentsPromise,
+  ]);
+
   if (!post) {
     throw new AppError('No post found', StatusCodes.BAD_REQUEST);
   }
-
-  const query = {
-    postId: post?._id,
-  };
-
-  const totalComments = await Comment.countDocuments(query).exec();
 
   const data = {
     post: {

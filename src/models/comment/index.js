@@ -2,6 +2,12 @@ const mongoose = require('mongoose');
 
 const commentSchema = new mongoose.Schema(
   {
+    postSlug: {
+      type: String,
+      required: [true, 'Post slug is required'],
+      ref: 'Post',
+      index: true,
+    },
     postId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Post',
