@@ -6,6 +6,7 @@ const { Post } = require('../../models');
 const { uploadCoverImage } = require('./upload-cover-image');
 const { ADMIN } = require('../../constants');
 const Reaction = require('../../models/reaction');
+const Comment = require('../../models/comment');
 
 /**
  * @desc Add a new post
@@ -156,6 +157,12 @@ const getPost = asyncWrapper(async (req, res) => {
     throw new AppError('No post found', StatusCodes.BAD_REQUEST);
   }
 
+  const query = {
+    postId: post?._id,
+  };
+
+  const totalComments = await Comment.countDocuments(query).exec();
+
   const data = {
     post: {
       id: post._id,
@@ -170,6 +177,7 @@ const getPost = asyncWrapper(async (req, res) => {
       published_at: post.published_at,
       category: post.category,
       tags: post.tags,
+      totalComments,
     },
     author: {
       id: post.author._id,
