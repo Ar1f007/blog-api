@@ -6,12 +6,14 @@ const reactionSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'User id is required'],
+      index: true,
     },
 
     postId: {
       type: Schema.Types.ObjectId,
       ref: 'Post',
       required: [true, 'Post id is required'],
+      index: true,
     },
 
     isLiked: {
