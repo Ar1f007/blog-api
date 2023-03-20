@@ -6,6 +6,8 @@ const cors = require('cors');
 const middleware = require('./middleware');
 const { logger, connect } = require('./utils');
 
+const reactionRoute = require('./routes/reaction');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -33,6 +35,8 @@ app.use('/api/tags', require('./routes/tag'));
 // comment route
 app.use('/api/comments', require('./routes/comment'));
 
+// reactions route
+app.use('/api/reactions', reactionRoute);
 // email route
 app.use('/api/email', require('./routes/email'));
 

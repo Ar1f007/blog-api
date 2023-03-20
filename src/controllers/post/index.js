@@ -247,7 +247,7 @@ const toggleReact = asyncWrapper(async (req, res) => {
   // - update the 'isLiked' field to true
   // - inc 'likesCount' by 1
 
-  const { userId, postId, isLiked } = req.body;
+  const { userId, postId } = req.body;
 
   if (userId !== req.user.userId) {
     throw new AppError('Unauthorized', StatusCodes.UNAUTHORIZED);
@@ -258,49 +258,46 @@ const toggleReact = asyncWrapper(async (req, res) => {
 
   // if it does not exist then create new doc
   if (!docFound) {
-    const doc = await Reaction.create({ ...req.body, isLiked: true });
+    const doc = await Reaction.create({ ...req.body });
+
+    if (!doc) {
+      throw new AppError(
+        'Something went wrong',
+        StatusCodes.EXPECTATION_FAILED
+      );
+    }
+
     const post = await Post.findByIdAndUpdate(
       postId,
       {
         $inc: { likesCount: 1 },
       },
+
       { new: true }
     );
 
     return res
       .status(StatusCodes.CREATED)
-      .json({ success: true, reactionCount: post.likesCount, doc });
+      .json({ success: true, reactionCount: post.likesCount });
   }
 
-  let post;
+  const doc = await Reaction.findByIdAndDelete(docFound._id).exec();
 
-  // inc or decrement dependent upon isLiked value
-  let options = {
-    $inc: { likesCount: isLiked ? 1 : -1 },
-  };
+  if (!doc) {
+    throw new AppError('Something went wrong', StatusCodes.EXPECTATION_FAILED);
+  }
 
-  // document is created but now in case of user liked / disliked update the isLiked field
-  const doc = await Reaction.findByIdAndUpdate(
-    docFound._id,
-    { isLiked },
+  const post = await Post.findByIdAndUpdate(
+    postId,
+    {
+      $inc: { likesCount: -1 },
+    },
     { new: true }
   );
 
-  // if liked then update likesCount field - increment by one
-  if (isLiked) {
-    post = await Post.findByIdAndUpdate(postId, options, { new: true });
-
-    return res
-      .status(StatusCodes.OK)
-      .json({ success: true, reactionCount: post.likesCount, doc });
-  }
-
-  // since disliked then update likesCount field - decrement by one
-  post = await Post.findByIdAndUpdate(postId, options, { new: true });
-
-  res
+  return res
     .status(StatusCodes.OK)
-    .json({ success: true, reactionCount: post.likesCount, doc });
+    .json({ success: true, reactionCount: post.likesCount });
 });
 
 module.exports = { createPost, getAllPosts, toggleReact, getPost, deletePost };

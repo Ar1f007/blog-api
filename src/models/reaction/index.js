@@ -15,11 +15,6 @@ const reactionSchema = new Schema(
       required: [true, 'Post id is required'],
       index: true,
     },
-
-    isLiked: {
-      type: Boolean,
-      default: false,
-    },
   },
   {
     timestamps: true,
