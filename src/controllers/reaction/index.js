@@ -26,7 +26,21 @@ const addReactionToPost = asyncWrapper(async (req, res) => {
   });
 });
 
+const isLiked = asyncWrapper(async (req, res) => {
+  const { postId, userId } = req.params;
+  if (!postId || !userId)
+    return res.status(StatusCodes.OK).json({ success: false, isLiked: false });
+
+  const exists = await Reaction.findOne({ postId, userId }).lean().exec();
+
+  if (!exists) {
+    return res.status(StatusCodes.OK).json({ success: true, isLiked: false });
+  }
+  return res.status(StatusCodes.OK).json({ success: true, isLiked: true });
+});
+
 module.exports = {
   getTotalReactions,
   addReactionToPost,
+  isLiked,
 };
