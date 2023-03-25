@@ -8,7 +8,16 @@ const { asyncWrapper, AppError } = require('../../utils');
  * @access Private
  */
 const createBookmark = asyncWrapper(async (req, res) => {
-  const { userId, postId } = req.body;
+  const { userId, postId } = req.params;
+
+  const authenticateUser = req.user;
+
+  if (authenticateUser.userId !== userId) {
+    throw new AppError(
+      'You can not perform this action',
+      StatusCodes.FORBIDDEN
+    );
+  }
 
   const doc = await Bookmark.create({ userId, postId });
 
