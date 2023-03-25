@@ -1,6 +1,29 @@
 const { StatusCodes } = require('http-status-codes');
 const Bookmark = require('../../models/bookmark');
-const { asyncWrapper } = require('../../utils');
+const { asyncWrapper, AppError } = require('../../utils');
+
+/**
+ * @desc Create Bookmark
+ * @routes POST /api/bookmarks/:userId/:postId
+ * @access Private
+ */
+const createBookmark = asyncWrapper(async (req, res) => {
+  const { userId, postId } = req.body;
+
+  const doc = await Bookmark.create({ userId, postId });
+
+  if (!doc) {
+    throw new AppError(
+      'Could not create bookmark',
+      StatusCodes.EXPECTATION_FAILED
+    );
+  }
+
+  return res.status(StatusCodes.CREATED).json({
+    success: true,
+    bookmark: doc,
+  });
+});
 
 /**
  * @desc Find out if the post is bookmarked or not
@@ -22,6 +45,7 @@ const isBookmarked = asyncWrapper(async (req, res) => {
 });
 
 module.exports = {
+  createBookmark,
   isBookmarked,
 };
 

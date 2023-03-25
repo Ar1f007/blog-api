@@ -7,6 +7,7 @@ const middleware = require('./middleware');
 const { logger, connect } = require('./utils');
 
 const reactionRoute = require('./routes/reaction');
+const bookmarkRoute = require('./routes/bookmark');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -37,6 +38,10 @@ app.use('/api/comments', require('./routes/comment'));
 
 // reactions route
 app.use('/api/reactions', reactionRoute);
+
+// bookmark route
+app.use('/api/bookmarks', bookmarkRoute);
+
 // email route
 app.use('/api/email', require('./routes/email'));
 
