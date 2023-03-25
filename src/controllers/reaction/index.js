@@ -26,6 +26,11 @@ const addReactionToPost = asyncWrapper(async (req, res) => {
   });
 });
 
+/**
+ * @desc Find out if the post is liked or not
+ * @routes GET /api/reactions/:userId/:postId
+ * @access Private
+ */
 const isLiked = asyncWrapper(async (req, res) => {
   const { postId, userId } = req.params;
   if (!postId || !userId)
