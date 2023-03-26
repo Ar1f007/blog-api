@@ -21,6 +21,6 @@ const bookmarkSchema = new Schema(
   }
 );
 
-const Bookmark = model('Reaction', bookmarkSchema);
+const Bookmark = model('Bookmark', bookmarkSchema);
 
 module.exports = Bookmark;

@@ -7,7 +7,7 @@ const { asyncWrapper, AppError } = require('../../utils');
  * @routes POST /api/bookmarks/:userId/:postId
  * @access Private
  */
-const createBookmark = asyncWrapper(async (req, res) => {
+const createOrRemoveBookmark = asyncWrapper(async (req, res) => {
   const { userId, postId } = req.params;
 
   const authenticateUser = req.user;
@@ -19,7 +19,26 @@ const createBookmark = asyncWrapper(async (req, res) => {
     );
   }
 
-  const doc = await Bookmark.create({ userId, postId });
+  const query = { userId, postId };
+
+  const docExists = await Bookmark.findOne(query);
+
+  if (docExists) {
+    const removedDoc = await Bookmark.findByIdAndDelete(docExists._id);
+
+    if (!removedDoc) {
+      throw new AppError(
+        'Could not perform the action',
+        StatusCodes.EXPECTATION_FAILED
+      );
+    }
+
+    return res
+      .status(StatusCodes.OK)
+      .json({ success: true, bookmark: removedDoc, isBookmarked: false });
+  }
+
+  const doc = await Bookmark.create(query);
 
   if (!doc) {
     throw new AppError(
@@ -31,6 +50,7 @@ const createBookmark = asyncWrapper(async (req, res) => {
   return res.status(StatusCodes.CREATED).json({
     success: true,
     bookmark: doc,
+    isBookmarked: true,
   });
 });
 
@@ -54,7 +74,7 @@ const isBookmarked = asyncWrapper(async (req, res) => {
 });
 
 module.exports = {
-  createBookmark,
+  createOrRemoveBookmark,
   isBookmarked,
 };
 
