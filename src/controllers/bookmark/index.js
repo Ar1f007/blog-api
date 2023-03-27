@@ -4,7 +4,7 @@ const { asyncWrapper, AppError } = require('../../utils');
 
 /**
  * @desc Create Bookmark
- * @routes POST /api/bookmarks/:userId/:postId
+ * @routes POST /api/bookmarks/:postId/:userId
  * @access Private
  */
 const createOrRemoveBookmark = asyncWrapper(async (req, res) => {
@@ -56,7 +56,7 @@ const createOrRemoveBookmark = asyncWrapper(async (req, res) => {
 
 /**
  * @desc Find out if the post is bookmarked or not
- * @routes GET /api/bookmarks/:userId/:postId
+ * @routes GET /api/bookmarks/:postId/:userId
  * @access Private
  */
 const isBookmarked = asyncWrapper(async (req, res) => {
@@ -66,7 +66,7 @@ const isBookmarked = asyncWrapper(async (req, res) => {
 
   if (!docExists) {
     return res
-      .status(StatusCodes.CONTINUE)
+      .status(StatusCodes.OK)
       .json({ success: true, isBookmarked: false });
   }
 

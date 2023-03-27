@@ -540,6 +540,28 @@ const uploadAvatar = asyncWrapper(async (req, res) => {
   });
 });
 
+const getDashboardInfo = asyncWrapper(async (req, res) => {
+  const { userId } = req.params;
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new AppError('User not found', StatusCodes.BAD_REQUEST);
+  }
+
+  const data = {
+    totalPosts: user.postCount,
+    totalFollowers: user.followers.length,
+    totalFollowing: user.following.length,
+    totalFollowingCategories: 0,
+    totalFollowingTags: 0,
+  };
+
+  return res
+    .status(StatusCodes.OK)
+    .json({ success: true, dashboardInfo: data });
+});
+
 module.exports = {
   blockUser,
   createForgetPasswordCode,
@@ -547,6 +569,7 @@ module.exports = {
   deleteUser,
   followUser,
   getAllUsers,
+  getDashboardInfo,
   getUserDetails,
   login,
   myProfile,
@@ -556,7 +579,7 @@ module.exports = {
   unfollowUser,
   updateUser,
   updateUserPassword,
-  verifyAccount,
   uploadAvatar,
+  verifyAccount,
 };
 

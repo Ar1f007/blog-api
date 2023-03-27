@@ -113,4 +113,11 @@ router
     user.deleteUser
   );
 
+router
+  .route('/dashboard-info/:userId')
+  .get(
+    middleware.validate(userValidation.UserIdSchema, 'params'),
+    user.getDashboardInfo
+  );
+
 module.exports = router;

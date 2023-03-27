@@ -1,5 +1,5 @@
 const { StatusCodes } = require('http-status-codes');
-const { Tag, Category } = require('../../models');
+const { Tag, Category, User } = require('../../models');
 const { AppError } = require('../../utils');
 const { create } = require('./create-doc');
 
@@ -33,4 +33,10 @@ exports.getCategoryId = async (categoryName) => {
   const categoryId = await create(Category, categoryName);
 
   return categoryId;
+};
+
+exports.updatePostCount = async (authorId, value) => {
+  await User.findByIdAndUpdate(authorId, {
+    $inc: { postCount: value },
+  }).exec();
 };

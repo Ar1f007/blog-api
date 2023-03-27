@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 
 const { asyncWrapper, slugify, AppError } = require('../../utils');
-const { getCategoryId, getTagIds } = require('./util');
+const { getCategoryId, getTagIds, updatePostCount } = require('./util');
 const { Post } = require('../../models');
 const { uploadCoverImage } = require('./upload-cover-image');
 const { ADMIN } = require('../../constants');
@@ -52,6 +52,17 @@ const createPost = asyncWrapper(async (req, res) => {
   // create - indicating a payload without coverImage
   if (req.params.slug === 'create') {
     const post = await Post.create(postData);
+
+    if (!post) {
+      throw new AppError(
+        'Could not create post',
+        StatusCodes.EXPECTATION_FAILED
+      );
+    }
+
+    // increment post count by 1
+    await updatePostCount(authorId, 1);
+
     return res.status(StatusCodes.CREATED).json({ success: true, post });
   }
 
@@ -60,6 +71,14 @@ const createPost = asyncWrapper(async (req, res) => {
   postData.coverImage = url;
 
   const post = await Post.create(postData);
+
+  if (!post) {
+    throw new AppError('Could not create post', StatusCodes.EXPECTATION_FAILED);
+  }
+
+  // increment post count by 1
+  await updatePostCount(authorId, 1);
+
   res.status(StatusCodes.CREATED).json({ success: true, post });
 });
 
@@ -202,6 +221,24 @@ const getPost = asyncWrapper(async (req, res) => {
 });
 
 /**
+ * @desc Get authors post
+ * @route GET /api/posts/:userId
+ * @access Public
+ */
+const getAuthorsPosts = asyncWrapper(async (req, res) => {
+  const id = req.params.userId;
+  const { userId } = req.user;
+
+  if (id !== userId) {
+    throw new AppError('You are not authorized', StatusCodes.FORBIDDEN);
+  }
+
+  const posts = await Post.find({ author: userId }).exec();
+
+  res.status(StatusCodes.OK).json({ success: true, posts });
+});
+
+/**
  * @desc Delete post
  * @route /api/posts/:slug
  * @access Private
@@ -225,6 +262,9 @@ const deletePost = asyncWrapper(async (req, res) => {
   }
 
   await Post.deleteOne({ slug });
+
+  // decrement post count by 1
+  await updatePostCount(userId, -1);
 
   res
     .status(StatusCodes.OK)
@@ -300,4 +340,11 @@ const toggleReact = asyncWrapper(async (req, res) => {
     .json({ success: true, reactionCount: post.likesCount });
 });
 
-module.exports = { createPost, getAllPosts, toggleReact, getPost, deletePost };
+module.exports = {
+  createPost,
+  getAllPosts,
+  toggleReact,
+  getPost,
+  deletePost,
+  getAuthorsPosts,
+};
