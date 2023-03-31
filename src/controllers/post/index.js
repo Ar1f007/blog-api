@@ -222,8 +222,8 @@ const getPost = asyncWrapper(async (req, res) => {
 
 /**
  * @desc Get authors post
- * @route GET /api/posts/:userId
- * @access Public
+ * @route GET /api/posts/author-posts/:userId
+ * @access Private
  */
 const getAuthorsPosts = asyncWrapper(async (req, res) => {
   const id = req.params.userId;
@@ -248,13 +248,13 @@ const deletePost = asyncWrapper(async (req, res) => {
 
   const { slug } = req.params;
 
-  const post = await Post.findOne({ slug }).lean().select('authorId').exec();
+  const post = await Post.findOne({ slug }).lean().select('author').exec();
 
   if (!post) {
     throw new AppError('Post not found', StatusCodes.BAD_REQUEST);
   }
 
-  if (role !== ADMIN && userId !== post.authorId.toString()) {
+  if (role !== ADMIN && userId !== post.author.toString()) {
     throw new AppError(
       'You can not delete this post',
       StatusCodes.UNAUTHORIZED
