@@ -76,6 +76,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    website: String,
+    education: String,
+    address: String,
+    work: String,
   },
   {
     timestamps: true,
