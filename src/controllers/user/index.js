@@ -12,7 +12,9 @@ const {
   uploadToCloudinary,
 } = require('../../utils');
 const User = require('../../models/user');
+
 const { ADMIN } = require('../../constants');
+const { Post } = require('../../models');
 
 /**
  * @desc Register new user
@@ -92,6 +94,8 @@ const login = asyncWrapper(async (req, res) => {
 
   user.active = true;
   await user.save();
+
+  await Post.updateMany({ author: user.id }, { $set: { displayStatus: true } });
 
   const data = {
     id: user.id,
@@ -188,6 +192,11 @@ const deactivateUser = asyncWrapper(async (req, res) => {
   if (!user) {
     throw new AppError('No user found', StatusCodes.NOT_FOUND);
   }
+
+  await Post.updateMany(
+    { author: user.id },
+    { $set: { displayStatus: false } }
+  );
 
   res.status(StatusCodes.OK).json({
     success: true,

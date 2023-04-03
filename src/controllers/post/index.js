@@ -90,7 +90,7 @@ const createPost = asyncWrapper(async (req, res) => {
 const getAllPosts = asyncWrapper(async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
 
-  const query = { published_at: { $lte: Date.now() } };
+  const query = { published_at: { $lte: Date.now() }, displayStatus: true };
 
   const populateFields = [
     {

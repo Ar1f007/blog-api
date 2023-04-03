@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { ObjectId } = require('mongoose').Schema.Types;
 
 const commentSchema = new mongoose.Schema(
   {
@@ -14,9 +15,9 @@ const commentSchema = new mongoose.Schema(
       required: [true, 'Post is required'],
       index: true,
     },
-    user: {
-      type: Object,
-      required: [true, 'Commenter details is required'],
+    commenter: {
+      type: ObjectId,
+      ref: 'User',
     },
     commentDesc: {
       type: String,

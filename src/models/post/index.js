@@ -55,6 +55,11 @@ const postSchema = new mongoose.Schema(
       type: Date,
       required: [true, 'A date is required'],
     },
+
+    displayStatus: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

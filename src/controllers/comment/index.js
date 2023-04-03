@@ -24,7 +24,7 @@ const createComment = asyncWrapper(async (req, res) => {
   const comment = await Comment.create({
     postSlug,
     postId,
-    user: userInfo,
+    commenter: user.userId,
     commentDesc: content,
   });
 
@@ -35,6 +35,7 @@ const createComment = asyncWrapper(async (req, res) => {
   res.status(StatusCodes.CREATED).json({
     success: true,
     comment,
+    user: userInfo,
   });
 });
 
@@ -47,6 +48,7 @@ const getAllComments = asyncWrapper(async (req, res) => {
   const { id: postId } = req.params;
 
   const comments = await Comment.find({ postId })
+    .populate('commenter')
     .sort('-createdAt')
     .lean()
     .exec();
