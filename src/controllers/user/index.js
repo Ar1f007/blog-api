@@ -167,10 +167,16 @@ const myProfile = asyncWrapper(async (req, res) => {
 
 /**
  * @desc Deactivates user
- * @route PATCH /api/users/:id
+ * @route PATCH /api/users/deactivate-account/:userId
  * @access Private
  */
 const deactivateUser = asyncWrapper(async (req, res) => {
+  const { userId } = req.params;
+
+  if (userId !== req.user.userId) {
+    throw new AppError('Unauthorized', StatusCodes.FORBIDDEN);
+  }
+
   const user = await User.findByIdAndUpdate(
     req.user.userId,
     {

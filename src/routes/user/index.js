@@ -92,7 +92,7 @@ router
   );
 
 router
-  .route('/deactivate-account')
+  .route('/deactivate-account/:userId')
   .patch(middleware.authenticateUser, user.deactivateUser);
 
 router
