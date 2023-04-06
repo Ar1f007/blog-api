@@ -233,7 +233,10 @@ const getAuthorsPosts = asyncWrapper(async (req, res) => {
     throw new AppError('You are not authorized', StatusCodes.FORBIDDEN);
   }
 
-  const posts = await Post.find({ author: userId }).exec();
+  const posts = await Post.find({ author: userId })
+    .populate('category')
+    .lean()
+    .exec();
 
   res.status(StatusCodes.OK).json({ success: true, posts });
 });
