@@ -83,6 +83,79 @@ const createPost = asyncWrapper(async (req, res) => {
 });
 
 /**
+ * @desc Update a post
+ * @route PATCH /api/posts/update/:slug || /api/posts/update/no-image/:slug
+ * @access Private
+ */
+const updatePost = asyncWrapper(async (req, res) => {
+  const { postId } = req.params;
+  let postData = {};
+
+  const { title, description, category, tags } = req.body;
+
+  postData.title = title;
+  postData.description = description;
+
+  if (category.categoryId) {
+    postData.category = category.categoryId;
+  }
+
+  if (category.newCategoryName) {
+    postData.category = await getCategoryId(category.newCategoryName);
+  }
+
+  if (tags.ids) {
+    postData.tags = tags.ids;
+  }
+
+  if (tags.newTagNames) {
+    const newTagIds = await getTagIds(tags.newTagNames);
+    if (postData.tags) {
+      postData.tags = [...postData.tags, ...newTagIds];
+    } else {
+      postData.tags = newTagIds;
+    }
+  }
+
+  // "no-image" - indicating a payload without coverImage
+  if (req.params.indication === 'no-image') {
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      {
+        $set: {
+          ...postData,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!post) {
+      throw new AppError('No post found', StatusCodes.BAD_REQUEST);
+    }
+
+    return res.status(StatusCodes.OK).json({ success: true, post });
+  }
+
+  // Payload includes cover image
+  const url = await uploadCoverImage(req.file.filename);
+  postData.coverImage = url;
+
+  const post = await Post.findByIdAndUpdate(
+    postId,
+    { $set: { ...postData } },
+    { new: true }
+  );
+
+  if (!post) {
+    throw new AppError('No post found', StatusCodes.BAD_REQUEST);
+  }
+
+  res.status(StatusCodes.OK).json({ success: true, post });
+});
+
+/**
  * @desc Get the list of post which were already published (Date <= Current Time)
  * @route GET /api/posts
  * @access Public
@@ -235,6 +308,7 @@ const getAuthorsPosts = asyncWrapper(async (req, res) => {
 
   const posts = await Post.find({ author: userId })
     .populate('category')
+    .populate('tags')
     .lean()
     .exec();
 
@@ -350,4 +424,5 @@ module.exports = {
   getPost,
   deletePost,
   getAuthorsPosts,
+  updatePost,
 };
