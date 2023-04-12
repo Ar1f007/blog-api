@@ -30,14 +30,12 @@ router
     post.updatePost
   );
 
-router
-  .route('/update/:indication/:postId')
-  .patch(
-    middleware.authenticateUser,
-    middleware.validate(SlugSchema, 'params'),
-    middleware.validate(PostValidation.CreatePostSchema, 'body'),
-    post.updatePost
-  );
+router.route('/update/:indication/:postId').patch(
+  middleware.authenticateUser,
+  // middleware.validate(IdSchema, 'params'),
+  middleware.validate(PostValidation.CreatePostSchema, 'body'),
+  post.updatePost
+);
 
 router
   .route('/reactions')
