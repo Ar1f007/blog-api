@@ -290,54 +290,38 @@ const updateUserPassword = asyncWrapper(async (req, res) => {
  * @access Private
  */
 const followUser = asyncWrapper(async (req, res) => {
-  // 1. find the user you want to follow and update it's "followers" with your id
-  // id of you
+  const { userId } = req.body;
   const followerId = req.user.userId;
 
-  // id of the user to be followed
-  const toBeFollowedUserId = req.body.userId;
-
-  if (followerId === toBeFollowedUserId) {
-    throw new AppError('Can not follow yourself', StatusCodes.BAD_REQUEST);
+  if (followerId === userId) {
+    throw new AppError('Cannot follow yourself', StatusCodes.BAD_REQUEST);
   }
 
-  // check to see if you're already following the user
-  const targetUser = await User.findById(toBeFollowedUserId).exec();
+  const [follower, userToBeFollowed] = await Promise.all([
+    User.findById(followerId),
+    User.findById(userId),
+  ]);
 
-  if (!targetUser) {
+  if (!userToBeFollowed) {
     throw new AppError('User was not found', StatusCodes.BAD_REQUEST);
   }
 
-  const alreadyFollowing = targetUser.followers.find(
-    (id) => id.toString() === followerId.toString()
-  );
-
-  if (alreadyFollowing) {
+  if (userToBeFollowed.followers.includes(followerId)) {
     throw new AppError('You are already following', StatusCodes.BAD_REQUEST);
   }
 
-  // add your id to the follower's 'followers' list
-  const user = await User.findByIdAndUpdate(
-    toBeFollowedUserId,
-    {
-      $push: { followers: followerId },
-      isFollowing: true,
-    },
-    { new: true }
-  ).exec();
-
-  if (!user) {
-    throw new AppError('Could not perform the task', StatusCodes.CONFLICT);
+  if (follower.following.includes(userId)) {
+    throw new AppError('You are already following', StatusCodes.BAD_REQUEST);
   }
 
-  // 2. update your own "isFollowing" field with the user id who you followed
-  await User.findByIdAndUpdate(
-    followerId,
-    {
-      $push: { following: toBeFollowedUserId },
-    },
-    { new: true }
-  ).exec();
+  // Update userToBeFollowed's followers and isFollowing fields
+  userToBeFollowed.followers.push(followerId);
+  userToBeFollowed.isFollowing = true;
+  await userToBeFollowed.save();
+
+  // Update follower's following field
+  follower.following.push(userId);
+  await follower.save();
 
   return res
     .status(StatusCodes.OK)
@@ -350,42 +334,44 @@ const followUser = asyncWrapper(async (req, res) => {
  * @access Private
  */
 const unfollowUser = asyncWrapper(async (req, res) => {
-  // 1. find the user you want to unfollow and remove your id from it's "followers" list
-  // id of you
+  const { userId } = req.body;
   const unfollowerId = req.user.userId;
 
-  // id of the user to be followed
-  const toBeUnfollowedUserId = req.body.userId;
+  if (unfollowerId === userId) {
+    throw new AppError('You cannot unfollow yourself', StatusCodes.BAD_REQUEST);
+  }
 
-  if (unfollowerId === toBeUnfollowedUserId) {
+  const [unfollower, userToBeUnfollowed] = await Promise.all([
+    User.findById(unfollowerId),
+    User.findById(userId),
+  ]);
+
+  if (!userToBeUnfollowed) {
     throw new AppError(
-      'You can not unfollow yourself',
+      'User to be unfollowed was not found',
       StatusCodes.BAD_REQUEST
     );
   }
 
-  // remove your id from the to be unfollowed user's 'followers' list
-  const user = await User.findByIdAndUpdate(
-    toBeUnfollowedUserId,
-    {
-      $pull: { followers: unfollowerId },
-      isFollowing: false,
-    },
-    { new: true }
-  ).exec();
-
-  if (!user) {
-    throw new AppError('Could not perform the task', StatusCodes.CONFLICT);
+  if (!unfollower.following.includes(userId)) {
+    throw new AppError(
+      'You are not following this user',
+      StatusCodes.BAD_REQUEST
+    );
   }
 
-  // 2. update your own "isFollowing" field with the user id who you unfollowed
-  await User.findByIdAndUpdate(
-    unfollowerId,
-    {
-      $pull: { following: toBeUnfollowedUserId },
-    },
-    { new: true }
-  ).exec();
+  // Remove unfollowerId from userToBeUnfollowed's followers and set isFollowing to false
+  userToBeUnfollowed.followers = userToBeUnfollowed.followers.filter(
+    (id) => id.toString() !== unfollowerId.toString()
+  );
+  userToBeUnfollowed.isFollowing = false;
+  await userToBeUnfollowed.save();
+
+  // Remove userId from unfollower's following
+  unfollower.following = unfollower.following.filter(
+    (id) => id.toString() !== userId.toString()
+  );
+  await unfollower.save();
 
   return res
     .status(StatusCodes.OK)
