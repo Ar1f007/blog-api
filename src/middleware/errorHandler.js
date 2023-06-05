@@ -22,7 +22,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err.name === 'CastError') {
-    customError.message = `No data found with id : ${err.value}`;
+    customError.message = `No data found for : ${err.value}`;
     customError.statusCode = 404;
   }
 

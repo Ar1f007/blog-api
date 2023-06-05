@@ -161,9 +161,13 @@ const updatePost = asyncWrapper(async (req, res) => {
  * @access Public
  */
 const getAllPosts = asyncWrapper(async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 6, categoryId } = req.query;
 
   const query = { published_at: { $lte: Date.now() }, displayStatus: true };
+
+  if (categoryId) {
+    query.category = categoryId;
+  }
 
   const populateFields = [
     {
@@ -185,13 +189,15 @@ const getAllPosts = asyncWrapper(async (req, res) => {
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
 
-  const posts = await Post.find(query)
+  const postsQuery = Post.find(query)
     .populate(populateFields)
-    .sort(byLatestFirst)
-    .skip(startIndex)
-    .limit(limit)
-    .lean()
-    .exec();
+    .sort(byLatestFirst);
+
+  if (limit) {
+    postsQuery.skip(startIndex).limit(limit);
+  }
+
+  const posts = await postsQuery.lean().exec();
 
   const postCount = await Post.countDocuments(query).exec();
 
