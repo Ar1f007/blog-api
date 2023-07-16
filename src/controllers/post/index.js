@@ -67,7 +67,7 @@ const createPost = asyncWrapper(async (req, res) => {
   }
 
   // Payload includes cover image
-  const url = await uploadCoverImage(req.file.filename);
+  const url = await uploadCoverImage(undefined, req.file.filename);
   postData.coverImage = url;
 
   const post = await Post.create(postData);
@@ -139,7 +139,7 @@ const updatePost = asyncWrapper(async (req, res) => {
   }
 
   // Payload includes cover image
-  const url = await uploadCoverImage(req.file.filename);
+  const url = await uploadCoverImage(undefined, req.file.filename);
   postData.coverImage = url;
 
   const post = await Post.findByIdAndUpdate(
