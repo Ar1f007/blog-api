@@ -1,7 +1,11 @@
+const os = require('os');
+
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+
+process.env.UV_THREADPOOL_SIZE = os.cpus().length;
 
 const middleware = require('./middleware');
 const { logger, connect } = require('./utils');
